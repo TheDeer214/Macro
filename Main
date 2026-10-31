@@ -32,14 +32,3 @@ end)
 -- Printing
 print("[LOADED]")
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
-
--- SFX
-
--- Notification
-pcall(function()
-    StarterGui:SetCore("SendNotification", {
-        Title = "MacroSuite"
-        Text = "Successfully loaded!"
-        Duration = 3
-    })
-end)
