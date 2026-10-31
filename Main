@@ -36,7 +36,9 @@ print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 -- SFX
 
 -- Notification
+notify("1", "Dud", icon, 7)
 pcall(function()
+notify("2", "By Duds", icon, 2)
     StarterGui:SetCore("SendNotification", {
         Title = "MacroSuite",
         Text = "Successfully loaded!",
