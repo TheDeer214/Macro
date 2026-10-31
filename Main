@@ -29,6 +29,7 @@ pcall(function()
 end)
 
 -- Printing
+print("V.1")
 print("[LOADED]")
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
@@ -44,7 +45,7 @@ pcall(function()
     StarterGui:SetCore("SendNotification", {
         Title = "MacroSuite",
         Text = "Successfully loaded!",
-        Icon = "rbxassetid://86706686119511",
+        Icon = "rbxassetid://134818493895834",
         Duration = 3
     })
 end)
