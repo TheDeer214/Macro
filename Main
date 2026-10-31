@@ -33,22 +33,18 @@ print("[LOADED]")
 print("Script ID: " .. _G.MacroStats.ExecutionCount .. "")
 
 -- SFX
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://9114302479"
-sound.Volume = 1
-sound.Parent = SoundService
-sound:Play()
-
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
+local notificationSound = Instance.new("Sound")
+notificationSound.SoundId = "rbxassetid://9114302479"
+notificationSound.Volume = 1
+notificationSound.Parent = SoundService
+notificationSound:Play()
 
 -- Notification
 pcall(function()
     StarterGui:SetCore("SendNotification", {
         Title = "MacroSuite",
-        Text = "Loaded"
-        Icon = "rbxassetid://86706686119511"
+        Text = "Successfully loaded!",
+        Icon = "rbxassetid://86706686119511",
         Duration = 3
     })
 end)
