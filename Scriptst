@@ -1,5 +1,5 @@
 -- 🟩 Startup
-print("V.")
+print("V.Q")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -32,3 +32,13 @@ end)
 -- Printing
 print("[LOADED]")
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
+
+-- Notification
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "MacroSuite",
+        Text = "Successfully loaded! Executed " .. _G.MacroStats.ExecutionCount .. " times.",
+        Icon = "rbxassetid://6023426915",
+        Duration = 5
+    })
+end)
