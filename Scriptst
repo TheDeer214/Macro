@@ -33,30 +33,28 @@ end)
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
 -- Notification setup
-local function sendMacroNotification(titleText, bodyText, iconId, duration)
-    task.spawn(function()
-        for _ = 1, 10 do
-            local success = pcall(function()
-                StarterGui:SetCore("SendNotification", {
-                    Title = titleText,
-                    Text = bodyText,
-                    Icon = iconId or "",
-                    Duration = duration or 5,
-                })
-            end)
-            if success then break end
-            task.wait(0.5)
-        end
-    end)
-end
+pcall(function()
+	local function notify(titleText, bodyText, iconId, duration)
+		for _ = 1, 10 do
+			local ok = pcall(function()
+				StarterGui:SetCore("SendNotification", {
+					Title = titleText,
+					Text = bodyText,
+					Icon = iconId or "",
+					Duration = duration or 6,
+				})
+			end)
+			if ok then return end
+			task.wait(0.5)
+		end
+	end
 
--- Fire notification
-sendMacroNotification(
-    "Macro Suite", 
-    "Successfully loaded! Execution #" .. _G.MacroStats.ExecutionCount, 
-    "rbxassetid://6023426915", 
-    5
-)
+	notify("Test 1", "Thanks to Dua", icon, 7)
+	task.wait(0.6)
+	notify("Test 2", "Special thanks to Dua", nil, 7)
+	task.wait(0.6)
+	notify("Test 3", "DuaLipa", nil, 7)
+end)
 -- Printing
 print("[MACROSUITE]")
 print("[LOADED]")
