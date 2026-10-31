@@ -29,7 +29,7 @@ pcall(function()
 end)
 
 -- Printing
-print("V.2")
+print("V.3")
 print("[LOADED]")
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
