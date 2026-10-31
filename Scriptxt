@@ -1,5 +1,7 @@
--- 🟩 Startup
-print("V.U")
+-- 🟩 = Editable
+
+-- Startup
+print("V.C")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -29,11 +31,30 @@ pcall(function()
     writefile(fileName, HttpService:JSONEncode(_G.MacroStats))
 end)
 
--- ID
+-- 🟩 ID
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
 -- Notification setup
+local function notify(titleText, bodyText, iconId, duration)
+    task.spawn(function()
+        for _ = 1, 10 do
+            local ok = pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = titleText,
+                    Text = bodyText,
+                    Icon = iconId or "",
+                    Duration = duration or 5,
+                })
+            end)
+            if ok then return end
+            task.wait(0.5)
+        end
+    end)
+end
 
--- Printing
+-- 🟩 Fire notification
+notify("Macro Suite", "Successfully loaded! Run #" .. _G.MacroStats.ExecutionCount, "rbxassetid://6023426915", 6)
+
+-- 🟩 Printing
 print("[MACROSUITE]")
 print("[LOADED]")
