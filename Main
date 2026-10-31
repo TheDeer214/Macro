@@ -30,7 +30,7 @@ end)
 
 -- Printing
 print("[LOADED]")
-print("Script ID: " .. _G.MacroStats.ExecutionCount .. "")
+print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
 -- SFX
 local notificationSound = Instance.new("Sound")
