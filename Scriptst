@@ -1,5 +1,5 @@
 -- 🟩 Startup
-print("V.W")
+print("V.w")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
