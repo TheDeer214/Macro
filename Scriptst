@@ -1,5 +1,5 @@
 -- 🟩 Startup
-print("V.D")
+print("V.Z")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -33,7 +33,6 @@ end)
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
 -- Notification setup
-pcall(function()
 	local function notify(titleText, bodyText, iconId, duration)
 		for _ = 1, 10 do
 			local ok = pcall(function()
@@ -49,12 +48,13 @@ pcall(function()
 		end
 	end
 
-	notify("Test 1", "Thanks to Dua", icon, 7)
+	notify("Test 1", "Thanks to Dua", nil, 7)
 	task.wait(0.6)
 	notify("Test 2", "Special thanks to Dua", nil, 7)
 	task.wait(0.6)
-	notify("Test 3", "DuaLipa", nil, 7)
+	notify("Test 3", "DuaLipa", nil, 3)
 end)
+
 -- Printing
 print("[MACROSUITE]")
 print("[LOADED]")
