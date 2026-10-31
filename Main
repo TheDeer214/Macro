@@ -1,0 +1,33 @@
+-- Startup
+
+local HttpService = game:GetService("HttpService")
+local fileName = "MacroSuiteStats.json"
+
+-- Initialize
+_G.MacroStats = {
+    ExecutionCount = 0
+}
+
+-- Load
+if pcall(function() readfile(fileName) end) then
+    local success, decoded = pcall(function()
+        return HttpService:JSONDecode(readfile(fileName))
+    end)
+    if success and type(decoded) == "table" then
+        for k, v in pairs(decoded) do
+            _G.MacroStats[k] = v
+        end
+    end
+end
+
+-- Increment
+_G.MacroStats.ExecutionCount = (_G.MacroStats.ExecutionCount or 0) + 1
+
+-- Saving
+pcall(function()
+    writefile(fileName, HttpService:JSONEncode(_G.MacroStats))
+end)
+
+-- Printing
+print("[LOADED]")
+print("Script ID: " .. _G.MacroStats.ExecutionCount .. "")
