@@ -125,6 +125,6 @@ end
 
 -- ==========================================
 
--- ShowNotification("MacroSuite", "Loaded successfully!", "rbxassetid://6023426915", "", 7)
--- task.wait(1)
--- ShowNotification("Test", "Dudes.", "", "", 3)
+ShowNotification("MacroSuite", "Loaded successfully!", "rbxassetid://6023426915", "", 7)
+task.wait(1)
+ShowNotification("Test", "Dudes.", "", "", 3)
