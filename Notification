@@ -1,4 +1,4 @@
--- Startup
+-- 🟥 Base Build
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 
@@ -121,10 +121,13 @@ local function ShowNotification(title, message, iconId, soundId, duration)
 	end)
 end
 
--- ==========================================
+-- 🟥 Player
+local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 
 -- ==========================================
+-- ‼️(TEMPLATE)‼️ShowNotification("Title", "Text", "Decal", "SFX", Duration)
+-- ==========================================
 
-ShowNotification("MacroSuite", "Loaded successfully!", "rbxassetid://6023426915", "", 7)
+ShowNotification("MacroSuite", "Loaded successfully!", "rbxassetid://3720662966", "", 7)
 task.wait(1)
-ShowNotification("Test", "Dudes.", "", "", 3)
+ShowNotification("Welcome", "myDisplayName", "", "", 3)
