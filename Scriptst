@@ -187,7 +187,8 @@ local Theme = {
 	PanelColor3 = Color3.fromRGB(15, 15, 18),
 	TabButtonColor3 = Color3.fromRGB(45, 45, 52),
 	CardColor3 = Color3.fromRGB(40, 40, 48),
-	AccentColor3 = Color3.fromRGB(46, 204, 113)
+	AccentColor3 = Color3.fromRGB(46, 204, 113),
+    MainCardColor3 = Color3.fromRGB(45, 45, 52)
 }
 
 local screenGui = Instance.new("ScreenGui")
@@ -423,3 +424,44 @@ toggleButton.Activated:Connect(function()
 		end
 	end
 end)
+
+-- ⬜ Main Tab
+local mainTabFrame = Instance.new("Frame")
+mainTabFrame.Name = "MainTab"
+mainTabFrame.Size = UDim2.new(1, 0, 1, 0)
+mainTabFrame.BackgroundTransparency = 1
+mainTabFrame.Visible = true -- Visible by default since app starts on Main
+mainTabFrame.Parent = contentContainer
+
+local greetingLabel = Instance.new("TextLabel")
+greetingLabel.Name = "GreetingLabel"
+greetingLabel.Size = UDim2.new(1, -30, 0, 30)
+greetingLabel.Position = UDim2.new(0, 15, 0, 12)
+greetingLabel.BackgroundTransparency = 1
+greetingLabel.Font = Enum.Font.GothamBold
+greetingLabel.Text = "Hello, " .. myDisplayName .. "!"
+greetingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+greetingLabel.TextSize = 16
+greetingLabel.TextXAlignment = Enum.TextXAlignment.Left
+greetingLabel.Parent = mainTabFrame
+
+local stuffCard = Instance.new("Frame")
+stuffCard.Name = "StuffCard"
+stuffCard.Size = UDim2.new(1, -30, 1, -60)
+stuffCard.Position = UDim2.new(0, 15, 0, 48)
+stuffCard.BackgroundColor3 = Theme.MainCardColor3
+stuffCard.BorderSizePixel = 0
+stuffCard.Parent = mainTabFrame
+
+local stuffCorner = Instance.new("UICorner")
+stuffCorner.CornerRadius = UDim.new(0, 8)
+stuffCorner.Parent = stuffCard
+
+local stuffLabel = Instance.new("TextLabel")
+stuffLabel.Size = UDim2.new(1, 0, 1, 0)
+stuffLabel.BackgroundTransparency = 1
+stuffLabel.Font = Enum.Font.GothamBold
+stuffLabel.Text = "STUFF"
+stuffLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+stuffLabel.TextSize = 16
+stuffLabel.Parent = stuffCard
