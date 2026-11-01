@@ -136,7 +136,7 @@ end
 getgenv().MacroSuiteRunning = true
 
 -- 👀 Main script starts here
-print("V.U")
+print("V.V")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
