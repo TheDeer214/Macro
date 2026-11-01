@@ -46,10 +46,11 @@ screenGui.Parent = playerGui
 
 -- @param title string: The header of the notification
 -- @param message string: The body text
--- @param iconId string: The rbxassetid:// string for the image icon
--- @param duration number: How long the notification stays visible (in seconds)
+-- @param iconId string? (Optional): The rbxassetid:// string for the image icon (can be nil or "")
+-- @param duration number? (Optional): How long the notification stays visible (default: 3)
 local function ShowNotification(title, message, iconId, duration)
-	duration = duration or 3 -- Default duration is 3 seconds if not provided
+	duration = duration or 3
+	local hasIcon = iconId and iconId ~= ""
 
 	local notifFrame = Instance.new("Frame")
 	notifFrame.Name = "NotificationItem"
@@ -63,22 +64,27 @@ local function ShowNotification(title, message, iconId, duration)
 	uiCorner.CornerRadius = UDim.new(0, 8)
 	uiCorner.Parent = notifFrame
 
-	local icon = Instance.new("ImageLabel")
-	icon.Name = "Icon"
-	icon.Size = UDim2.new(0, 45, 0, 45)
-	icon.Position = UDim2.new(0, 12, 0, 12)
-	icon.BackgroundTransparency = 1
-	icon.Image = iconId or "rbxassetid://0" -- Fallback asset
-	icon.Parent = notifFrame
+	if hasIcon then
+		local icon = Instance.new("ImageLabel")
+		icon.Name = "Icon"
+		icon.Size = UDim2.new(0, 45, 0, 45)
+		icon.Position = UDim2.new(0, 12, 0, 12)
+		icon.BackgroundTransparency = 1
+		icon.Image = iconId
+		icon.Parent = notifFrame
 
-	local iconCorner = Instance.new("UICorner")
-	iconCorner.CornerRadius = UDim.new(1, 0) -- Makes it circular
-	iconCorner.Parent = icon
+		local iconCorner = Instance.new("UICorner")
+		iconCorner.CornerRadius = UDim.new(1, 0)
+		iconCorner.Parent = icon
+	end
+
+	local textXPos = hasIcon and 68 or 15
+	local textWidth = hasIcon and 180 or 230
 
 	local titleLabel = Instance.new("TextLabel")
 	titleLabel.Name = "Title"
-	titleLabel.Size = UDim2.new(0, 180, 0, 20)
-	titleLabel.Position = UDim2.new(0, 68, 0, 12)
+	titleLabel.Size = UDim2.new(0, textWidth, 0, 20)
+	titleLabel.Position = UDim2.new(0, textXPos, 0, 12)
 	titleLabel.BackgroundTransparency = 1
 	titleLabel.Font = Enum.Font.GothamBold
 	titleLabel.Text = title
@@ -89,8 +95,8 @@ local function ShowNotification(title, message, iconId, duration)
 
 	local messageLabel = Instance.new("TextLabel")
 	messageLabel.Name = "Message"
-	messageLabel.Size = UDim2.new(0, 180, 0, 25)
-	messageLabel.Position = UDim2.new(0, 68, 0, 32)
+	messageLabel.Size = UDim2.new(0, textWidth, 0, 25)
+	messageLabel.Position = UDim2.new(0, textXPos, 0, 32)
 	messageLabel.BackgroundTransparency = 1
 	messageLabel.Font = Enum.Font.Gotham
 	messageLabel.Text = message
@@ -101,8 +107,8 @@ local function ShowNotification(title, message, iconId, duration)
 	messageLabel.Parent = notifFrame
 
 	local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-	local slideInGoal = {Position = UDim2.new(1, -270, 0.05, 0)} -- Target position on screen
-	local slideOutGoal = {Position = UDim2.new(1, 10, 0.05, 0)} -- Back off-screen
+	local slideInGoal = {Position = UDim2.new(1, -270, 0.05, 0)}
+	local slideOutGoal = {Position = UDim2.new(1, 10, 0.05, 0)}
 
 	local tweenIn = TweenService:Create(notifFrame, tweenInfo, slideInGoal)
 	tweenIn:Play()
@@ -118,7 +124,7 @@ local function ShowNotification(title, message, iconId, duration)
 end
 
 -- 🟩 Fire notification
-ShowNotification("Friend Request", "RobloxUser123 sent you a request!", "rbxassetid://6023426915", 4)
+ShowNotification("MacroSuite", "Successfully loaded!", "rbxassetid://6023426915", 5)
 
 
 -- 🟩 Printing
