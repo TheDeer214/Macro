@@ -125,9 +125,9 @@ end
 local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 
 -- ==========================================
--- ‼️(TEMPLATE)‼️ShowNotification("Title", "Text", "Decal", "SFX", Duration)
+-- ‼️(TEMPLATE)‼️ShowNotification("Title", "Text", "Icon", "SFX", Duration)
 -- ==========================================
 
-ShowNotification("Macrostruct", "Loaded successfully!", "rbxassetid://12433138134", "", 5)
+ShowNotification("Macrostruct", "Loaded successfully!", "rbxassetid://12433138134", "rbxassetid://9114302479", 5)
 task.wait(1)
-ShowNotification("Welcome!", myDisplayName, "", "", 5)
+ShowNotification("Welcome!", myDisplayName, "", "rbxassetid://139945781730068", 5)
