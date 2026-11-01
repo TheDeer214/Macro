@@ -378,7 +378,9 @@ UserInputService.InputChanged:Connect(function(input)
 		local newX = framePos.X.Offset + delta.X
 		local newY = framePos.Y.Offset + delta.Y
 		local screenSize = toggleScreenGui.AbsoluteSize
+
 		local buttonSize = toggleButton.AbsoluteSize
+
 		local clampedX = math.clamp(newX, 0, screenSize.X - buttonSize.X)
 		local clampedY = math.clamp(newY, 0, screenSize.Y - buttonSize.Y)
 		toggleButton.Position = UDim2.new(0, clampedX, 0, clampedY)
@@ -386,32 +388,3 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- Functions
-local TweenService = game:GetService("TweenService")
-
-local isGuiVisible = true
-local openPosition = UDim2.new(0.5, 0, 0.5, 0)
-local closedPosition = UDim2.new(0.5, 0, 1.5, 0)
-local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-
-toggleButton.Activated:Connect(function()
-	if dragging then return end
-
-	isGuiVisible = not isGuiVisible
-
-	if mainFrame then
-		if isGuiVisible then
-			mainFrame.Visible = true
-			local tweenIn = TweenService:Create(mainFrame, tweenInfo, {Position = openPosition})
-			tweenIn:Play()
-		else
-			local tweenOut = TweenService:Create(mainFrame, tweenInfo, {Position = closedPosition})
-			tweenOut:Play()
-
-			tweenOut.Completed:Connect(function()
-				if not isGuiVisible then
-					mainFrame.Visible = false
-				end
-			end)
-		end
-	end
-end)
