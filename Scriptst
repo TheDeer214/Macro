@@ -29,13 +29,9 @@ pcall(function()
     writefile(fileName, HttpService:JSONEncode(_G.MacroStats))
 end)
 
--- 🟩 ID
+-- 🟩 Printing
+print("[MACROSTRUCT]")
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
 -- Notification
 loadstring(game:HttpGet("https://raw.githubusercontent.com/TheDeer214/Macro/refs/heads/main/Notification"))()
-
-
--- 🟩 Printing
-print("[MACROSUITE]")
-print("[LOADED]")
