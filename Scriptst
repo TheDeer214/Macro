@@ -123,8 +123,9 @@ end
 
 -- 🟥 Dupe check
 if getgenv().MacroSuiteRunning then
-    getgenv().SharedMacroNotification("[ERROR]", "ABORTING DUPLICATE...", "rbxassetid://94101711880666", "rbxassetid://8426701399", 5)
+    getgenv().SharedMacroNotification("ERROR", "DUPLICATE ABORTED", "rbxassetid://94101711880666", "rbxassetid://8426701399", 5)
     warn("[MACROSTRUCT IS ALREADY RUNNING].")
+
     return
 end
 
