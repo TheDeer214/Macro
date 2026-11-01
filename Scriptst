@@ -125,11 +125,7 @@ end
 if getgenv().MacroSuiteRunning then
     getgenv().SharedMacroNotification("ERROR", "DUPLICATE TERMINATED", "rbxassetid://94101711880666", "rbxassetid://97265398503265", 3)
     warn("[DUPLICATE TERMINATED].")
-    task.wait(1)
-    getgenv().SharedMacroNotification("NOTICE", "Duplicates may cause issues", "rbxassetid://103287906385313", "rbxassetid://2484550861", 3)
-    task.wait(0.5)
-    getgenv().SharedMacroNotification("NOTICE", "Redirecting position", "rbxassetid://15978828004", "rbxassetid://2484550861", 3)
-    
+
     return
 end
 
