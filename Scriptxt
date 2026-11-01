@@ -43,18 +43,6 @@ StarterGui:SetCore("SendNotification", {
     Duration = 5
 })
 
--- SFX
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://9114302200"
-sound.Volume = 1
-sound.Parent = workspace
-
-local function playSFX()
-	sound:Play()
-end
-
-playSFX()
-
 -- 🟩 Printing
 print("[MACROSUITE]")
 print("[LOADED]")
