@@ -49,7 +49,7 @@ local function ShowNotification(title, message, iconId, soundId, duration)
 		local icon = Instance.new("ImageLabel")
 		icon.Name = "Icon"
 		icon.Size = UDim2.new(0, 60, 0, 60)
-		icon.Position = UDim2.new(0, 10, 0, 5)
+		icon.Position = UDim2.new(0, 8, 0, 5)
 		icon.BackgroundTransparency = 1
 		icon.Image = iconId
 		icon.Parent = notifFrame
@@ -67,7 +67,7 @@ local function ShowNotification(title, message, iconId, soundId, duration)
 		sound:Play()
 	end
 
-	local textXPos = hasIcon and 68 or 15
+	local textXPos = hasIcon and 72 or 15
 	local textWidth = hasIcon and 180 or 230
 
 	local titleLabel = Instance.new("TextLabel")
