@@ -575,7 +575,7 @@ panicScreenGui.Parent = player.PlayerGui
 
 local panicButton = Instance.new("TextButton")
 panicButton.Size = UDim2.new(0, 35, 0, 35)
-panicButton.Position = UDim2.new(0, 80, 0, 20)
+panicButton.Position = UDim2.new(0, 75, 0, 20) 
 panicButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 panicButton.BorderSizePixel = 0
 panicButton.Text = "🛑"
@@ -591,7 +591,6 @@ panicCorner.Parent = panicButton
 panicButton.Activated:Connect(function()
 	print("PANIC ACTIVATED: Aborting all macros.")
 end)
-
 
 -- ⬜ Logic stuffs
 local UserInputService = game:GetService("UserInputService")
