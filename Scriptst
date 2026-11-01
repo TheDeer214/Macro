@@ -58,7 +58,7 @@ if not getgenv().SharedMacroNotification then
 		if hasSound then
 			local sound = Instance.new("Sound")
 			sound.SoundId = soundId
-			sound.Volume = 2
+			sound.Volume = 4
 			sound.Parent = notifFrame
 			sound:Play()
 		end
