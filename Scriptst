@@ -132,7 +132,7 @@ end
 getgenv().MacroSuiteRunning = true
 
 -- 👀 Main script starts here
-print("V.O")
+print("V.V")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -169,7 +169,7 @@ print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 -- Start Notification
 local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 
-getgenv().SharedMacroNotification("Dummy", "[Script ID: " .. _G.MacroStats.ExecutionCount .. "]", "", "", 5)
+getgenv().SharedMacroNotification("Dummy", "V.V", "", "", 5)
 getgenv().SharedMacroNotification("Macrostruct", "Loaded successfully!", "rbxassetid://12433138134", "rbxassetid://9114302479", 5)
 task.wait(1)
 getgenv().SharedMacroNotification("Hello!", myDisplayName, "", "rbxassetid://15675016548", 5)
