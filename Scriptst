@@ -228,15 +228,12 @@ UserInputService.InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
 		local delta = input.Position - mousePos
 		
-		-- Calculate raw new absolute positions
 		local newX = framePos.X.Offset + delta.X
 		local newY = framePos.Y.Offset + delta.Y
 		
-		-- Get screen size dynamically (accounting for mobile notches/gui inset if needed)
 		local screenSize = toggleScreenGui.AbsoluteSize
 		local buttonSize = toggleButton.AbsoluteSize
 		
-		-- Clamp values so it can never leave the visible screen borders
 		local clampedX = math.clamp(newX, 0, screenSize.X - buttonSize.X)
 		local clampedY = math.clamp(newY, 0, screenSize.Y - buttonSize.Y)
 		
@@ -245,15 +242,18 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 local isGuiVisible = true
+
 local mainGuiWindow = mainFrame
 
-toggleButton.MouseButton1Click:Connect(function()
+toggleButton.Activated:Connect(function()
 	if dragging then return end
 	
 	isGuiVisible = not isGuiVisible
 	
 	if mainGuiWindow then
 		mainGuiWindow.Visible = isGuiVisible
+	else
+		print("Main GUI visibility toggled to:", isGuiVisible)
 	end
 end)
 
