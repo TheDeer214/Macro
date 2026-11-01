@@ -173,4 +173,249 @@ getgenv().SharedMacroNotification("Macrostruct", "Loaded successfully!", "rbxass
 task.wait(1)
 getgenv().SharedMacroNotification("Hello!", myDisplayName, "", "rbxassetid://15675016548", 5)
 
--- ⬜ Main GUI Startup
+-- ⬜ Main GUI Setup
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ‼️ THEME
+local Theme = {
+	HeaderColor3 = Color3.fromRGB(235, 65, 65),
+	BackgroundColor3 = Color3.fromRGB(20, 20, 24),
+	PanelColor3 = Color3.fromRGB(15, 15, 18),
+	TabButtonColor3 = Color3.fromRGB(45, 45, 52),
+	CardColor3 = Color3.fromRGB(40, 40, 48),
+	AccentColor3 = Color3.fromRGB(46, 204, 113)
+}
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "Macrostruct_MainGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Size = UDim2.new(0.55, 0, 0.75, 0)
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.BackgroundColor3 = Theme.BackgroundColor3
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = mainFrame
+
+local headerBar = Instance.new("Frame")
+headerBar.Size = UDim2.new(1, 0, 0, 45)
+headerBar.BackgroundColor3 = Theme.HeaderColor3
+headerBar.BorderSizePixel = 0
+headerBar.Parent = mainFrame
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 10)
+headerCorner.Parent = headerBar
+
+local headerCover = Instance.new("Frame")
+headerCover.Size = UDim2.new(1, 0, 0, 10)
+headerCover.Position = UDim2.new(0, 0, 1, -10)
+headerCover.BackgroundColor3 = Theme.HeaderColor3
+headerCover.BorderSizePixel = 0
+headerCover.Parent = headerBar
+
+local headerTitle = Instance.new("TextLabel")
+headerTitle.Size = UDim2.new(1, -20, 1, 0)
+headerTitle.Position = UDim2.new(0, 15, 0, 0)
+headerTitle.BackgroundTransparency = 1
+headerTitle.Font = Enum.Font.GothamBold
+headerTitle.Text = "Macrostruct"
+headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+headerTitle.TextSize = 16
+headerTitle.TextXAlignment = Enum.TextXAlignment.Left
+headerTitle.Parent = headerBar
+
+local sidebar = Instance.new("Frame")
+sidebar.Size = UDim2.new(0, 110, 1, -55)
+sidebar.Position = UDim2.new(0, 10, 0, 50)
+sidebar.BackgroundColor3 = Theme.PanelColor3
+sidebar.BorderSizePixel = 0
+sidebar.Parent = mainFrame
+
+local sidebarCorner = Instance.new("UICorner")
+sidebarCorner.CornerRadius = UDim.new(0, 8)
+sidebarCorner.Parent = sidebar
+
+local tabLayout = Instance.new("UIListLayout")
+tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+tabLayout.Padding = UDim.new(0, 8)
+tabLayout.Parent = sidebar
+
+local pad = Instance.new("UIPadding")
+pad.PaddingTop = UDim.new(0, 10)
+pad.Parent = sidebar
+
+local function createTabButton(name, order)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0, 90, 0, 35)
+	btn.BackgroundColor3 = Theme.TabButtonColor3
+	btn.BorderSizePixel = 0
+	btn.Font = Enum.Font.GothamBold
+	btn.Text = name
+	btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+	btn.TextSize = 12
+	btn.LayoutOrder = order
+	btn.Parent = sidebar
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 6)
+	corner.Parent = btn
+	return btn
+end
+
+createTabButton("MAIN", 1)
+createTabButton("MACROS", 2)
+createTabButton("CONSOLE", 3)
+createTabButton("OPTIONS", 4)
+
+local contentContainer = Instance.new("Frame")
+contentContainer.Size = UDim2.new(1, -135, 1, -55)
+contentContainer.Position = UDim2.new(0, 125, 0, 50)
+contentContainer.BackgroundColor3 = Theme.PanelColor3
+contentContainer.BorderSizePixel = 0
+contentContainer.Parent = mainFrame
+
+local contentCorner = Instance.new("UICorner")
+contentCorner.CornerRadius = UDim.new(0, 8)
+contentCorner.Parent = contentContainer
+
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.BorderSizePixel = 0
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
+scrollingFrame.ScrollBarThickness = 4
+scrollingFrame.Parent = contentContainer
+
+local scrollList = Instance.new("UIListLayout")
+scrollList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+scrollList.SortOrder = Enum.SortOrder.LayoutOrder
+scrollList.Padding = UDim.new(0, 10)
+scrollList.Parent = scrollingFrame
+
+local scrollPadding = Instance.new("UIPadding")
+scrollPadding.PaddingTop = UDim.new(0, 10)
+scrollPadding.Parent = scrollingFrame
+
+local addMacroBtn = Instance.new("TextButton")
+addMacroBtn.Size = UDim2.new(0, 40, 0, 40)
+addMacroBtn.Position = UDim2.new(1, -50, 1, -50)
+addMacroBtn.BackgroundColor3 = Theme.AccentColor3
+addMacroBtn.BorderSizePixel = 0
+addMacroBtn.Font = Enum.Font.GothamBold
+addMacroBtn.Text = "+"
+addMacroBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+addMacroBtn.TextSize = 22
+addMacroBtn.Parent = contentContainer
+
+local addCorner = Instance.new("UICorner")
+addCorner.CornerRadius = UDim.new(1, 0)
+addCorner.Parent = addMacroBtn
+
+-- Show/Hider
+local UserInputService = game:GetService("UserInputService")
+
+local toggleScreenGui = Instance.new("ScreenGui")
+toggleScreenGui.Name = "Macrostruct_ToggleGui"
+toggleScreenGui.ResetOnSpawn = false
+toggleScreenGui.Parent = playerGui
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+toggleButton.BorderSizePixel = 0
+toggleButton.Text = "⚙️"
+toggleButton.TextSize = 22
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Parent = toggleScreenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = toggleButton
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(60, 60, 60)
+uiStroke.Thickness = 1.5
+uiStroke.Parent = toggleButton
+
+local dragging = false
+local dragInput, mousePos, framePos
+
+toggleButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		mousePos = input.Position
+		framePos = toggleButton.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - mousePos
+		local newX = framePos.X.Offset + delta.X
+		local newY = framePos.Y.Offset + delta.Y
+		
+		local screenSize = toggleScreenGui.AbsoluteSize
+		local buttonSize = toggleButton.AbsoluteSize
+		
+		local clampedX = math.clamp(newX, 0, screenSize.X - buttonSize.X)
+		local clampedY = math.clamp(newY, 0, screenSize.Y - buttonSize.Y)
+		
+		toggleButton.Position = UDim2.new(0, clampedX, 0, clampedY)
+	end
+end)
+
+-- Slide Animation
+local TweenService = game:GetService("TweenService")
+
+local isGuiVisible = true
+local openPosition = UDim2.new(0.5, 0, 0.5, 0)
+local closedPosition = UDim2.new(0.5, 0, 1.5, 0)
+local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+
+toggleButton.Activated:Connect(function()
+	if dragging then return end
+	
+	isGuiVisible = not isGuiVisible
+	
+	if mainFrame then
+		if isGuiVisible then
+			mainFrame.Visible = true
+			local tweenIn = TweenService:Create(mainFrame, tweenInfo, {Position = openPosition})
+			tweenIn:Play()
+		else
+			local tweenOut = TweenService:Create(mainFrame, tweenInfo, {Position = closedPosition})
+			tweenOut:Play()
+			
+			tweenOut.Completed:Connect(function()
+				if not isGuiVisible then
+					mainFrame.Visible = false
+				end
+			end)
+		end
+	end
+end)
