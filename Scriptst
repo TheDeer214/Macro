@@ -336,7 +336,7 @@ toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 20, 0, 20)
 toggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 toggleButton.BorderSizePixel = 0
-toggleButton.Text = "⚙️"
+toggleButton.Text = "="
 toggleButton.TextSize = 22
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Parent = toggleScreenGui
