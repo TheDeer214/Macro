@@ -58,7 +58,7 @@ if not getgenv().SharedMacroNotification then
 		if hasSound then
 			local sound = Instance.new("Sound")
 			sound.SoundId = soundId
-			sound.Volume = 4
+			sound.Volume = 5
 			sound.Parent = notifFrame
 			sound:Play()
 		end
@@ -172,3 +172,90 @@ local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 getgenv().SharedMacroNotification("Macrostruct", "Loaded successfully!", "rbxassetid://12433138134", "rbxassetid://9114302479", 5)
 task.wait(1)
 getgenv().SharedMacroNotification("Welcome!", myDisplayName, "", "rbxassetid://15675016548", 5)
+
+-- ⬜ Show/hider toggle
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local toggleScreenGui = Instance.new("ScreenGui")
+toggleScreenGui.Name = "MacroSuite_ToggleGui"
+toggleScreenGui.ResetOnSpawn = false
+toggleScreenGui.Parent = playerGui
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+toggleButton.BorderSizePixel = 0
+toggleButton.Text = "="
+toggleButton.TextSize = 22
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Parent = toggleScreenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = toggleButton
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(60, 60, 60)
+uiStroke.Thickness = 1.5
+uiStroke.Parent = toggleButton
+
+local dragging = false
+local dragInput, mousePos, framePos
+
+toggleButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		mousePos = input.Position
+		framePos = toggleButton.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - mousePos
+		toggleButton.Position = UDim2.new(
+			framePos.X.Scale, 
+			framePos.X.Offset + delta.X, 
+			framePos.Y.Scale, 
+			framePos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+local isGuiVisible = true
+-- local mainGuiWindow = ... (reference your main window here)
+
+toggleButton.MouseButton1Click:Connect(function()
+	if dragging then return end
+	
+	isGuiVisible = not isGuiVisible
+	
+	-- ‼️ TEMPLATE
+	if mainGuiWindow then
+		mainGuiWindow.Visible = isGuiVisible
+	else
+		print("Main GUI visibility toggled to:", isGuiVisible)
+	end
+end)
+
+-- ✅ TEMPLATE END
+
+-- ⬜ Main GUI
