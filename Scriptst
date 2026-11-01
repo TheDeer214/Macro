@@ -166,6 +166,8 @@ print("[MACROSTRUCT]")
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
 -- Start Notification
+local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
+
 getgenv().SharedMacroNotification("Macrostruct", "Loaded successfully!", "rbxassetid://12433138134", "rbxassetid://9114302479", 5)
 task.wait(1)
 getgenv().SharedMacroNotification("Welcome!", myDisplayName, "", "rbxassetid://15675016548", 5)
