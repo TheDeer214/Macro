@@ -175,25 +175,25 @@ task.wait(1)
 getgenv().SharedMacroNotification("Hello!", myDisplayName, "", "rbxassetid://15675016548", 5)
 
 -- ⬜ Main GUI Setup
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- ‼️ THEME
 local Theme = {
 	HeaderColor3 = Color3.fromRGB(235, 65, 65),
 	BackgroundColor3 = Color3.fromRGB(20, 20, 24),
 	PanelColor3 = Color3.fromRGB(15, 15, 18),
 	TabButtonColor3 = Color3.fromRGB(45, 45, 52),
+	TabActiveColor3 = Color3.fromRGB(75, 75, 85),
 	CardColor3 = Color3.fromRGB(40, 40, 48),
-	AccentColor3 = Color3.fromRGB(46, 204, 113),
-    MainCardColor3 = Color3.fromRGB(45, 45, 52)
+	MainCardColor3 = Color3.fromRGB(45, 45, 52),
+	AccentColor3 = Color3.fromRGB(46, 204, 113)
 }
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "Macrostruct_MainGui"
 screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 1
 screenGui.Parent = playerGui
 
 local mainFrame = Instance.new("Frame")
@@ -203,7 +203,6 @@ mainFrame.Size = UDim2.new(0.75, 0, 0.9, 0)
 mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 mainFrame.BackgroundColor3 = Theme.BackgroundColor3
 mainFrame.BorderSizePixel = 0
-screenGui.DisplayOrder = 1
 mainFrame.Parent = screenGui
 
 local mainCorner = Instance.new("UICorner")
@@ -259,29 +258,6 @@ local pad = Instance.new("UIPadding")
 pad.PaddingTop = UDim.new(0, 10)
 pad.Parent = sidebar
 
-local function createTabButton(name, order)
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(0, 90, 0, 35)
-	btn.BackgroundColor3 = Theme.TabButtonColor3
-	btn.BorderSizePixel = 0
-	btn.Font = Enum.Font.GothamBold
-	btn.Text = name
-	btn.TextColor3 = Color3.fromRGB(220, 220, 220)
-	btn.TextSize = 12
-	btn.LayoutOrder = order
-	btn.Parent = sidebar
-
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 6)
-	corner.Parent = btn
-	return btn
-end
-
-createTabButton("MAIN", 1)
-createTabButton("MACROS", 2)
-createTabButton("CONSOLE", 3)
-createTabButton("OPTIONS", 4)
-
 local contentContainer = Instance.new("Frame")
 contentContainer.Size = UDim2.new(1, -135, 1, -55)
 contentContainer.Position = UDim2.new(0, 125, 0, 50)
@@ -293,183 +269,56 @@ local contentCorner = Instance.new("UICorner")
 contentCorner.CornerRadius = UDim.new(0, 8)
 contentCorner.Parent = contentContainer
 
-local scrollingFrame = Instance.new("ScrollingFrame")
-scrollingFrame.Size = UDim2.new(1, 0, 1, 0)
-scrollingFrame.BackgroundTransparency = 1
-scrollingFrame.BorderSizePixel = 0
-scrollingFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
-scrollingFrame.ScrollBarThickness = 4
-scrollingFrame.Parent = contentContainer
+-- ⬜ Tab Systems
+local tabButtons = {}
+local tabFrames = {}
 
-local scrollList = Instance.new("UIListLayout")
-scrollList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-scrollList.SortOrder = Enum.SortOrder.LayoutOrder
-scrollList.Padding = UDim.new(0, 10)
-scrollList.Parent = scrollingFrame
+local function createTabContainer(name, order, isDefault)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0, 90, 0, 35)
+	btn.BackgroundColor3 = isDefault and Theme.TabActiveColor3 or Theme.TabButtonColor3
+	btn.BorderSizePixel = 0
+	btn.Font = Enum.Font.GothamBold
+	btn.Text = name
+	btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+	btn.TextSize = 12
+	btn.LayoutOrder = order
+	btn.Parent = sidebar
 
-local scrollPadding = Instance.new("UIPadding")
-scrollPadding.PaddingTop = UDim.new(0, 10)
-scrollPadding.Parent = scrollingFrame
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 6)
+	corner.Parent = btn
+	tabButtons[name] = btn
 
-local addMacroBtn = Instance.new("TextButton")
-addMacroBtn.Size = UDim2.new(0, 40, 0, 40)
-addMacroBtn.Position = UDim2.new(1, -50, 1, -50)
-addMacroBtn.BackgroundColor3 = Theme.AccentColor3
-addMacroBtn.BorderSizePixel = 0
-addMacroBtn.Font = Enum.Font.GothamBold
-addMacroBtn.Text = "+"
-addMacroBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-addMacroBtn.TextSize = 22
-addMacroBtn.Parent = contentContainer
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1, 0, 1, 0)
+	frame.BackgroundTransparency = 1
+	frame.Visible = isDefault
+	frame.Parent = contentContainer
+	tabFrames[name] = frame
 
-local addCorner = Instance.new("UICorner")
-addCorner.CornerRadius = UDim.new(1, 0)
-addCorner.Parent = addMacroBtn
-
--- Show/Hider
-local UserInputService = game:GetService("UserInputService")
-
-local toggleScreenGui = Instance.new("ScreenGui")
-toggleScreenGui.Name = "Macrostruct_ToggleGui"
-toggleScreenGui.ResetOnSpawn = false
-toggleScreenGui.Parent = playerGui
-
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 50, 0, 50)
-toggleButton.Position = UDim2.new(0, 20, 0, 20)
-toggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-toggleButton.BorderSizePixel = 0
-toggleButton.Text = "="
-toggleButton.TextSize = 22
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleScreenGui.DisplayOrder = 2
-toggleButton.ZIndex = 67
-toggleButton.Parent = toggleScreenGui
-
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 10)
-uiCorner.Parent = toggleButton
-
-local uiStroke = Instance.new("UIStroke")
-uiStroke.Color = Color3.fromRGB(60, 60, 60)
-uiStroke.Thickness = 1.5
-uiStroke.Parent = toggleButton
-
-local dragging = false
-local dragInput, mousePos, framePos
-
-toggleButton.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-		mousePos = input.Position
-		framePos = toggleButton.Position
-		
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
-
-toggleButton.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-		dragInput = input
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		local delta = input.Position - mousePos
-		local newX = framePos.X.Offset + delta.X
-		local newY = framePos.Y.Offset + delta.Y
-		
-		local screenSize = toggleScreenGui.AbsoluteSize
-		local buttonSize = toggleButton.AbsoluteSize
-		
-		local clampedX = math.clamp(newX, 0, screenSize.X - buttonSize.X)
-		local clampedY = math.clamp(newY, 0, screenSize.Y - buttonSize.Y)
-		
-		toggleButton.Position = UDim2.new(0, clampedX, 0, clampedY)
-	end
-end)
-
--- Slide Animation
-local TweenService = game:GetService("TweenService")
-
-local isGuiVisible = true
-local openPosition = UDim2.new(0.5, 0, 0.5, 0)
-local closedPosition = UDim2.new(0.5, 0, 1.5, 0)
-local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-
-toggleButton.Activated:Connect(function()
-	if dragging then return end
-	
-	isGuiVisible = not isGuiVisible
-	
-	if mainFrame then
-		if isGuiVisible then
-			mainFrame.Visible = true
-			local tweenIn = TweenService:Create(mainFrame, tweenInfo, {Position = openPosition})
-			tweenIn:Play()
-		else
-			local tweenOut = TweenService:Create(mainFrame, tweenInfo, {Position = closedPosition})
-			tweenOut:Play()
-			
-			tweenOut.Completed:Connect(function()
-				if not isGuiVisible then
-					mainFrame.Visible = false
-				end
-			end)
-		end
-	end
-end)
-
--- 🟥 Test
-local mainTab = mainTabFrame -- (From your Main tab setup)
-local consoleTab = consoleTabFrame
-
--- Find the buttons
-local sidebarButtons = sidebar:GetChildren()
-for _, child in ipairs(sidebarButtons) do
-	if child:IsA("TextButton") then
-		child.Activated:Connect(function()
-			-- Hide everything first
-			mainTab.Visible = false
-			consoleTab.Visible = false
-			
-			-- Show based on button name
-			if child.Name == "MAINTab" then
-				mainTab.Visible = true
-			elseif child.Name == "CONSOLETAB" then
-				consoleTab.Visible = true
-			end
-		end)
-	end
+	return frame
 end
 
--- ⬜ Main Tab
-local mainTabFrame = Instance.new("Frame")
-mainTabFrame.Name = "MainTab"
-mainTabFrame.Size = UDim2.new(1, 0, 1, 0)
-mainTabFrame.BackgroundTransparency = 1
-mainTabFrame.Visible = true -- Visible by default since app starts on Main
-mainTabFrame.Parent = contentContainer
+-- Generate
+local mainTabFrame = createTabContainer("MAIN", 1, true)
+local macrosTabFrame = createTabContainer("MACROS", 2, false)
+local consoleTabFrame = createTabContainer("CONSOLE", 3, false)
+local optionsTabFrame = createTabContainer("OPTIONS", 4, false)
 
+-- MAIN TAB CONTENT --
 local greetingLabel = Instance.new("TextLabel")
-greetingLabel.Name = "GreetingLabel"
 greetingLabel.Size = UDim2.new(1, -30, 0, 30)
 greetingLabel.Position = UDim2.new(0, 15, 0, 12)
 greetingLabel.BackgroundTransparency = 1
 greetingLabel.Font = Enum.Font.GothamBold
-greetingLabel.Text = "Hello, " .. myDisplayName .. "!"
+greetingLabel.Text = "Hello, " .. (myDisplayName or "Player") .. "!"
 greetingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 greetingLabel.TextSize = 16
 greetingLabel.TextXAlignment = Enum.TextXAlignment.Left
 greetingLabel.Parent = mainTabFrame
 
 local stuffCard = Instance.new("Frame")
-stuffCard.Name = "StuffCard"
 stuffCard.Size = UDim2.new(1, -30, 1, -60)
 stuffCard.Position = UDim2.new(0, 15, 0, 48)
 stuffCard.BackgroundColor3 = Theme.MainCardColor3
@@ -489,18 +338,9 @@ stuffLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
 stuffLabel.TextSize = 16
 stuffLabel.Parent = stuffCard
 
--- ⬜ Console
+-- CONSOLE TAB CONTENT --
 local LogService = game:GetService("LogService")
-
-local consoleTabFrame = Instance.new("Frame")
-consoleTabFrame.Name = "ConsoleTab"
-consoleTabFrame.Size = UDim2.new(1, 0, 1, 0)
-consoleTabFrame.BackgroundTransparency = 1
-consoleTabFrame.Visible = false -- Starts hidden, toggle when CONSOLE tab is clicked
-consoleTabFrame.Parent = contentContainer
-
 local consoleScroll = Instance.new("ScrollingFrame")
-consoleScroll.Name = "ConsoleScroll"
 consoleScroll.Size = UDim2.new(1, -30, 1, -30)
 consoleScroll.Position = UDim2.new(0, 15, 0, 15)
 consoleScroll.BackgroundColor3 = Theme.PanelColor3
@@ -526,31 +366,116 @@ consolePadding.PaddingLeft = UDim.new(0, 8)
 consolePadding.PaddingRight = UDim.new(0, 8)
 consolePadding.Parent = consoleScroll
 
-local function addLogMessage(message, messageType)
-	local textLabel = Instance.new("TextLabel")
-	textLabel.Size = UDim2.new(1, 0, 0, 18)
-	textLabel.BackgroundTransparency = 1
-	textLabel.Font = Enum.Font.Code
-	textLabel.TextSize = 11
-	textLabel.TextXAlignment = Enum.TextXAlignment.Left
-	textLabel.TextWrapped = true
-	textLabel.Text = message
-	
-	if messageType == Enum.MessageType.MessageWarning then
-		textLabel.TextColor3 = Color3.fromRGB(241, 196, 15) -- Yellow for warnings
-	elseif messageType == Enum.MessageType.MessageError then
-		textLabel.TextColor3 = Color3.fromRGB(231, 76, 60)  -- Red for errors
+LogService.MessageOut:Connect(function(msg, msgType)
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, 0, 0, 18)
+	lbl.BackgroundTransparency = 1
+	lbl.Font = Enum.Font.Code
+	lbl.TextSize = 11
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
+	lbl.TextWrapped = true
+	lbl.Text = msg
+	if msgType == Enum.MessageType.MessageWarning then
+		lbl.TextColor3 = Color3.fromRGB(241, 196, 15)
+	elseif msgType == Enum.MessageType.MessageError then
+		lbl.TextColor3 = Color3.fromRGB(231, 76, 60)
 	else
-		textLabel.TextColor3 = Color3.fromRGB(200, 200, 200) -- Light grey for standard prints
+		lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
 	end
-	
-	textLabel.Parent = consoleScroll
-end
-
-LogService.MessageOut:Connect(function(message, messageType)
-	addLogMessage(message, messageType)
+	lbl.Parent = consoleScroll
 end)
 
--- ‼️ TEST CUSTOM CONSOLE ‼️
-print("Macrostruct initialized successfully.")
-warn("This is a test warning message.")
+
+-- ⬜ Logic stuffs
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+for name, btn in pairs(tabButtons) do
+	btn.Activated:Connect(function()
+		for targetName, frame in pairs(tabFrames) do
+			local isTarget = (targetName == name)
+			frame.Visible = isTarget
+			tabButtons[targetName].BackgroundColor3 = isTarget and Theme.TabActiveColor3 or Theme.TabButtonColor3
+		end
+	end)
+end
+
+local toggleScreenGui = Instance.new("ScreenGui")
+toggleScreenGui.Name = "Macrostruct_ToggleGui"
+toggleScreenGui.ResetOnSpawn = false
+toggleScreenGui.DisplayOrder = 2
+toggleScreenGui.Parent = playerGui
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+toggleButton.BorderSizePixel = 0
+toggleButton.Text = "="
+toggleButton.TextSize = 22
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.ZIndex = 67
+toggleButton.Parent = toggleScreenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = toggleButton
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(60, 60, 60)
+uiStroke.Thickness = 1.5
+uiStroke.Parent = toggleButton
+
+local dragging = false
+local dragInput, mousePos, framePos
+
+toggleButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		mousePos = input.Position
+		framePos = toggleButton.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then dragging = false end
+		end)
+	end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - mousePos
+		local newX = framePos.X.Offset + delta.X
+		local newY = framePos.Y.Offset + delta.Y
+		local screenSize = toggleScreenGui.AbsoluteSize
+		local buttonSize = toggleButton.AbsoluteSize
+		toggleButton.Position = UDim2.new(0, math.clamp(newX, 0, screenSize.X - buttonSize.X), 0, math.clamp(newY, 0, screenSize.Y - buttonSize.Y))
+	end
+end)
+
+-- Slide Animation Hook
+local isGuiVisible = true
+local openPosition = UDim2.new(0.5, 0, 0.5, 0)
+local closedPosition = UDim2.new(0.5, 0, 1.5, 0)
+local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+
+toggleButton.Activated:Connect(function()
+	if dragging then return end
+	isGuiVisible = not isGuiVisible
+	if mainFrame then
+		if isGuiVisible then
+			mainFrame.Visible = true
+			TweenService:Create(mainFrame, tweenInfo, {Position = openPosition}):Play()
+		else
+			local tweenOut = TweenService:Create(mainFrame, tweenInfo, {Position = closedPosition})
+			tweenOut:Play()
+			tweenOut.Completed:Connect(function()
+				if not isGuiVisible then mainFrame.Visible = false end
+			end)
+		end
+	end
+end)
