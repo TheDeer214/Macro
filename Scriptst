@@ -306,7 +306,7 @@ local macrosTabFrame = createTabContainer("MACROS", 2, false)
 local consoleTabFrame = createTabContainer("CONSOLE", 3, false)
 local optionsTabFrame = createTabContainer("OPTIONS", 4, false)
 
--- MAIN TAB CONTENT --
+-- MAIN TAB CONTENT -- ‼️
 local greetingLabel = Instance.new("TextLabel")
 greetingLabel.Size = UDim2.new(1, -30, 0, 30)
 greetingLabel.Position = UDim2.new(0, 15, 0, 12)
@@ -338,7 +338,7 @@ stuffLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
 stuffLabel.TextSize = 16
 stuffLabel.Parent = stuffCard
 
--- CONSOLE TAB CONTENT --
+-- CONSOLE TAB CONTENT -- ‼️
 local LogService = game:GetService("LogService")
 local consoleScroll = Instance.new("ScrollingFrame")
 consoleScroll.Size = UDim2.new(1, -30, 1, -30)
@@ -392,6 +392,214 @@ end
 
 LogService.MessageOut:Connect(function(msg, msgType)
 	appendLog(msg, msgType)
+end)
+
+-- OPTIONS TAB CONTENT -- ‼️
+local HttpService = game:GetService("HttpService")
+local UserInputService = game:GetService("UserInputService")
+
+-- Default Settings Table
+local settingsData = {
+	DefaultDelay = 0.5,
+	PanicButtonEnabled = true,
+	DebugMode = false
+}
+
+-- jSON 😭
+local function saveSettings()
+	local success, encoded = pcall(function()
+		return HttpService:JSONEncode(settingsData)
+	end)
+	if success then
+		-- Store in a Player Attribute so it persists during the session
+		player:SetAttribute("MacrostructSettings", encoded)
+	else
+		warn("Failed to encode options to JSON:", encoded)
+	end
+end
+
+local function loadSettings()
+	local encoded = player:GetAttribute("MacrostructSettings")
+	if encoded then
+		local success, decoded = pcall(function()
+			return HttpService:JSONDecode(encoded)
+		end)
+		if success and type(decoded) == "table" then
+			settingsData = decoded
+			print("Options loaded from JSON successfully!")
+		end
+	end
+end
+loadSettings()
+
+local optionsScroll = Instance.new("ScrollingFrame")
+optionsScroll.Size = UDim2.new(1, -30, 1, -30)
+optionsScroll.Position = UDim2.new(0, 15, 0, 15)
+optionsScroll.BackgroundColor3 = Theme.PanelColor3
+optionsScroll.BorderSizePixel = 0
+optionsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+optionsScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+optionsScroll.ScrollBarThickness = 4
+optionsScroll.Parent = optionsTabFrame
+
+local optionsCorner = Instance.new("UICorner")
+optionsCorner.CornerRadius = UDim.new(0, 8)
+optionsCorner.Parent = optionsScroll
+
+local optionsLayout = Instance.new("UIListLayout")
+optionsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+optionsLayout.Padding = UDim.new(0, 12)
+optionsLayout.Parent = optionsScroll
+
+local optionsPadding = Instance.new("UIPadding")
+optionsPadding.PaddingTop = UDim.new(0, 12)
+optionsPadding.PaddingBottom = UDim.new(0, 12)
+optionsPadding.PaddingLeft = UDim.new(0, 12)
+optionsPadding.PaddingRight = UDim.new(0, 12)
+optionsPadding.Parent = optionsScroll
+
+local function createOptionCard(title, description, layoutOrder)
+	local card = Instance.new("Frame")
+	card.Size = UDim2.new(1, 0, 0, 60)
+	card.BackgroundColor3 = Theme.CardColor3
+	card.BorderSizePixel = 0
+	card.LayoutOrder = layoutOrder
+	card.Parent = optionsScroll
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 6)
+	corner.Parent = card
+
+	local titleLabel = Instance.new("TextLabel")
+	titleLabel.Size = UDim2.new(1, -120, 0, 22)
+	titleLabel.Position = UDim2.new(0, 12, 0, 8)
+	titleLabel.BackgroundTransparency = 1
+	titleLabel.Font = Enum.Font.GothamBold
+	titleLabel.Text = title
+	titleLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+	titleLabel.TextSize = 13
+	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	titleLabel.Parent = card
+
+	local descLabel = Instance.new("TextLabel")
+	descLabel.Size = UDim2.new(1, -120, 0, 20)
+	descLabel.Position = UDim2.new(0, 12, 0, 30)
+	descLabel.BackgroundTransparency = 1
+	descLabel.Font = Enum.Font.Gotham
+	descLabel.Text = description
+	descLabel.TextColor3 = Color3.fromRGB(150, 150, 160)
+	descLabel.TextSize = 11
+	descLabel.TextXAlignment = Enum.TextXAlignment.Left
+	descLabel.Parent = card
+
+	return card
+end
+
+local delayCard = createOptionCard("Default Action Delay", "Pause duration (seconds) between macro steps.", 1)
+local delayInput = Instance.new("TextBox")
+delayInput.Size = UDim2.new(0, 90, 0, 32)
+delayInput.Position = UDim2.new(1, -102, 0.5, -16)
+delayInput.BackgroundColor3 = Theme.TabButtonColor3
+delayInput.BorderSizePixel = 0
+delayInput.Font = Enum.Font.GothamBold
+delayInput.Text = tostring(settingsData.DefaultDelay)
+delayInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+delayInput.TextSize = 13
+delayInput.Parent = delayCard
+
+local delayCorner = Instance.new("UICorner")
+delayCorner.CornerRadius = UDim.new(0, 6)
+delayCorner.Parent = delayInput
+
+delayInput.FocusLost:Connect(function()
+	local val = tonumber(delayInput.Text)
+	if val and val >= 0 then
+		settingsData.DefaultDelay = val
+		saveSettings()
+	else
+		delayInput.Text = tostring(settingsData.DefaultDelay)
+	end
+end)
+
+local panicCard = createOptionCard("Panic Button Widget", "Shows a small top-left abort button to stop macros instantly.", 2)
+local panicToggleBtn = Instance.new("TextButton")
+panicToggleBtn.Size = UDim2.new(0, 90, 0, 32)
+panicToggleBtn.Position = UDim2.new(1, -102, 0.5, -16)
+panicToggleBtn.BackgroundColor3 = settingsData.PanicButtonEnabled and Theme.AccentColor3 or Theme.TabButtonColor3
+panicToggleBtn.BorderSizePixel = 0
+panicToggleBtn.Font = Enum.Font.GothamBold
+panicToggleBtn.Text = settingsData.PanicButtonEnabled and "ENABLED" else "DISABLED"
+panicToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+panicToggleBtn.TextSize = 11
+panicToggleBtn.Parent = panicCard
+
+local panicCorner = Instance.new("UICorner")
+panicCorner.CornerRadius = UDim.new(0, 6)
+panicCorner.Parent = panicToggleBtn
+
+local panicWidgetGui = Instance.new("ScreenGui")
+panicWidgetGui.Name = "Macrostruct_PanicWidget"
+panicWidgetGui.ResetOnSpawn = false
+panicWidgetGui.DisplayOrder = 2
+panicWidgetGui.Parent = playerGui
+
+local panicBtn = Instance.new("TextButton")
+panicWidgetGui.Enabled = settingsData.PanicButtonEnabled
+panicBtn.Size = UDim2.new(0, 35, 0, 35)
+panicBtn.Position = UDim2.new(0, 80, 0, 20)
+panicBtn.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
+panicBtn.BorderSizePixel = 0
+panicBtn.Text = "🛑"
+panicBtn.TextSize = 16
+panicBtn.Parent = panicWidgetGui
+
+local panicBtnCorner = Instance.new("UICorner")
+panicBtnCorner.CornerRadius = UDim.new(0, 8)
+panicBtnCorner.Parent = panicBtn
+
+panicBtn.Activated:Connect(function()
+	warn("[DISABLED ALL ACTIVE MACROS].")
+	-- Insert macro stop logic here when ready!
+end)
+
+panicToggleBtn.Activated:Connect(function()
+	settingsData.PanicButtonEnabled = not settingsData.PanicButtonEnabled
+	panicWidgetGui.Enabled = settingsData.PanicButtonEnabled
+	panicToggleBtn.Text = settingsData.PanicButtonEnabled and "ENABLED" else "DISABLED"
+	panicToggleBtn.BackgroundColor3 = settingsData.PanicButtonEnabled and Theme.AccentColor3 or Theme.TabButtonColor3
+	saveSettings()
+end)
+
+local debugCard = createOptionCard("Debug Mode", "Enables verbose diagnostic output in the Console tab.", 3)
+local debugToggleBtn = Instance.new("TextButton")
+debugToggleBtn.Size = UDim2.new(0, 90, 0, 32)
+debugToggleBtn.Position = UDim2.new(1, -102, 0.5, -16)
+debugToggleBtn.BackgroundColor3 = settingsData.DebugMode and Theme.AccentColor3 or Theme.TabButtonColor3
+debugToggleBtn.BorderSizePixel = 0
+debugToggleBtn.Font = Enum.Font.GothamBold
+debugToggleBtn.Text = settingsData.DebugMode and "ENABLED" else "DISABLED"
+debugToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+debugToggleBtn.TextSize = 11
+debugToggleBtn.Parent = debugCard
+
+local debugCorner = Instance.new("UICorner")
+debugCorner.CornerRadius = UDim.new(0, 6)
+debugCorner.Parent = debugToggleBtn
+
+debugToggleBtn.Activated:Connect(function()
+	settingsData.DebugMode = not settingsData.DebugMode
+	debugToggleBtn.Text = settingsData.DebugMode and "ENABLED" else "DISABLED"
+	debugToggleBtn.BackgroundColor3 = settingsData.DebugMode and Theme.AccentColor3 or Theme.TabButtonColor3
+	saveSettings()
+	if settingsData.DebugMode then
+		print("Debug mode activated.")
+	end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if not gameProcessed and input.KeyCode == Enum.KeyCode.F12 then
+		warn("[DISABLED ALL ACTIVE MACROS]")
+	end
 end)
 
 -- ⬜ Logic stuffs
