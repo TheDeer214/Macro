@@ -39,21 +39,9 @@ local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
 	Title = "MacroSuite",
 	Text = "Loaded successfully!",
-    Icon = "rbxassetid
+    Icon = "rbxassetid://12433138134"
     Duration = 5
 })
-
--- SFX
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://12433138134"
-sound.Volume = 1
-sound.Parent = workspace
-
-local function playSFX()
-	sound:Play()
-end
-
-playSFX()
 
 -- 🟩 Printing
 print("[MACROSUITE]")
