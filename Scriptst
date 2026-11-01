@@ -132,7 +132,7 @@ end
 getgenv().MacroSuiteRunning = true
 
 -- 👀 Main script starts here
-print("V.E")
+print("V.V")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -244,6 +244,19 @@ end)
 local isGuiVisible = true
 
 local mainGuiWindow = mainFrame
+
+toggleButton.Activated:Connect(function()
+	if dragging then return end
+	
+	isGuiVisible = not isGuiVisible
+	
+	if mainFrame then
+		mainFrame.Visible = isGuiVisible
+		print("mainFrame.Visible is now set to:", mainFrame.Visible)
+	else
+		print("ERROR: mainFrame reference is missing!")
+	end
+end)
 
 toggleButton.Activated:Connect(function()
 	if dragging then return end
