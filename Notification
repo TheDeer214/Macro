@@ -17,7 +17,7 @@ local activeNotifications = {}
 
 local function UpdateNotificationPositions()
 	for index, frame in ipairs(activeNotifications) do
-		local targetY = 20 + ((index - 1) * 80)
+		local targetY = 10 + ((index - 1) * 80)
 		local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 		
 		TweenService:Create(frame, tweenInfo, {
@@ -39,7 +39,7 @@ local function ShowNotification(title, message, iconId, soundId, duration)
 	local notifFrame = Instance.new("Frame")
 	notifFrame.Name = "NotificationItem"
 	notifFrame.Size = UDim2.new(0, 260, 0, 70)
-	notifFrame.Position = UDim2.new(1, 10, 0, 20)
+	notifFrame.Position = UDim2.new(1, 10, 0, 10)
 	notifFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 	notifFrame.BorderSizePixel = 0
 	notifFrame.Parent = screenGui
