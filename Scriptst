@@ -414,19 +414,37 @@ optionsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 optionsLayout.Padding = UDim.new(0, 10)
 optionsLayout.Parent = optionsScroll
 
+local fileName = "macrostruct_settings.json"
+
 local optionsSettings = {
 	DefaultDelay = 0.5,
 	DebugMode = false,
 	PanicButtonEnabled = true
 }
 
+local function loadSettings()
+	if pcall(function() return isfile and isfile(fileName) end) and isfile(fileName) then
+		local success, decoded = pcall(function()
+			return HttpService:JSONDecode(readfile(fileName))
+		end)
+		if success and type(decoded) == "table" then
+			for k, v in pairs(decoded) do
+				if optionsSettings[k] ~= nil then
+					optionsSettings[k] = v
+				end
+			end
+		end
+	end
+end
+
+loadSettings()
+
 local function saveSettings()
 	local success, encoded = pcall(function()
 		return HttpService:JSONEncode(optionsSettings)
 	end)
-	if success then
-		-- Placeholder: Add local storage / write file logic here if supported by exploit environment
-		print("Settings saved to JSON.")
+	if success and writefile then
+		writefile(fileName, encoded)
 	end
 end
 
