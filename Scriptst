@@ -241,9 +241,14 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
+local TweenService = game:GetService("TweenService")
+
 local isGuiVisible = true
 
-local mainGuiWindow = mainFrame
+local openPosition = UDim2.new(0.5, -260, 0.5, -170)
+local closedPosition = UDim2.new(0.5, -260, 1, 50) -- Slides completely off the bottom of the screen
+
+local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 
 toggleButton.Activated:Connect(function()
 	if dragging then return end
@@ -251,22 +256,21 @@ toggleButton.Activated:Connect(function()
 	isGuiVisible = not isGuiVisible
 	
 	if mainFrame then
-		mainFrame.Visible = isGuiVisible
-		print("mainFrame.Visible is now set to:", mainFrame.Visible)
-	else
-		print("ERROR: mainFrame reference is missing!")
-	end
-end)
+		if isGuiVisible then
+			mainFrame.Visible = true
 
-toggleButton.Activated:Connect(function()
-	if dragging then return end
-	
-	isGuiVisible = not isGuiVisible
-	
-	if mainGuiWindow then
-		mainGuiWindow.Visible = isGuiVisible
-	else
-		print("Main GUI visibility toggled to:", isGuiVisible)
+			local tweenIn = TweenService:Create(mainFrame, tweenInfo, {Position = openPosition})
+			tweenIn:Play()
+		else
+			local tweenOut = TweenService:Create(mainFrame, tweenInfo, {Position = closedPosition})
+			tweenOut:Play()
+
+			tweenOut.Completed:Connect(function()
+				if not isGuiVisible then
+					mainFrame.Visible = false
+				end
+			end)
+		end
 	end
 end)
 
