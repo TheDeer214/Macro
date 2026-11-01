@@ -1,5 +1,5 @@
 -- 🟩 Startup
-print("V.W")
+print("V.S")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -35,7 +35,7 @@ print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 -- SFX
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://9114302200"
-sound.Volume = 2
+sound.Volume = 1
 sound.Parent = workspace
 
 local function playSFX()
