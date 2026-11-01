@@ -128,6 +128,6 @@ local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 -- ‼️(TEMPLATE)‼️ShowNotification("Title", "Text", "Decal", "SFX", Duration)
 -- ==========================================
 
-ShowNotification("MacroSuite", "Loaded successfully!", "rbxassetid://12433138134", "", 5)
+ShowNotification("MacroGUI", "Loaded successfully!", "rbxassetid://12433138134", "", 5)
 task.wait(1)
 ShowNotification("Welcome", myDisplayName, "", "", 5)
