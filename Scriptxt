@@ -35,7 +35,7 @@ print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 -- SFX
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://9114302200"
-sound.Volume = 1
+sound.Volume = 2
 sound.Parent = workspace
 
 local function playSFX()
@@ -52,11 +52,10 @@ local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
 	Title = "MacroSuite",
 	Text = "Loaded successfully!",
-	Duration = 5,
-    Icon = "rbxassetid://3720662966"
+    Icon = "rbxassetid://18465867001"
+    Duration = 5
 })
 
 -- 🟩 Printing
--- 18465867001
 print("[MACROSUITE]")
 print("[LOADED]")
