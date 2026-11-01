@@ -366,7 +366,7 @@ consolePadding.PaddingLeft = UDim.new(0, 8)
 consolePadding.PaddingRight = UDim.new(0, 8)
 consolePadding.Parent = consoleScroll
 
-LogService.MessageOut:Connect(function(msg, msgType)
+local function appendLog(msg, msgType)
 	local lbl = Instance.new("TextLabel")
 	lbl.Size = UDim2.new(1, 0, 0, 18)
 	lbl.BackgroundTransparency = 1
@@ -375,6 +375,7 @@ LogService.MessageOut:Connect(function(msg, msgType)
 	lbl.TextXAlignment = Enum.TextXAlignment.Left
 	lbl.TextWrapped = true
 	lbl.Text = msg
+	
 	if msgType == Enum.MessageType.MessageWarning then
 		lbl.TextColor3 = Color3.fromRGB(241, 196, 15)
 	elseif msgType == Enum.MessageType.MessageError then
@@ -383,8 +384,15 @@ LogService.MessageOut:Connect(function(msg, msgType)
 		lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
 	end
 	lbl.Parent = consoleScroll
-end)
+end
 
+for _, logItem in ipairs(LogService:GetLogHistory()) do
+	appendLog(logItem.message, logItem.messageType)
+end
+
+LogService.MessageOut:Connect(function(msg, msgType)
+	appendLog(msg, msgType)
+end)
 
 -- ⬜ Logic stuffs
 local UserInputService = game:GetService("UserInputService")
