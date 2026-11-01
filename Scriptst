@@ -39,7 +39,6 @@ local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
 	Title = "MacroSuite",
 	Text = "Loaded successfully!",
-    Icon = "rbxassetid://18465867001"
     Duration = 5
 })
 
