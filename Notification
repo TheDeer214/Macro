@@ -49,7 +49,7 @@ local function ShowNotification(title, message, iconId, soundId, duration)
 		local icon = Instance.new("ImageLabel")
 		icon.Name = "Icon"
 		icon.Size = UDim2.new(0, 60, 0, 60)
-		icon.Position = UDim2.new(0, 12, 0, 5)
+		icon.Position = UDim2.new(0, 10, 0, 5)
 		icon.BackgroundTransparency = 1
 		icon.Image = iconId
 		icon.Parent = notifFrame
@@ -130,4 +130,4 @@ local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 
 ShowNotification("MacroGUI", "Loaded successfully!", "rbxassetid://12433138134", "", 5)
 task.wait(1)
-ShowNotification("Welcome", myDisplayName, "", "", 5)
+ShowNotification("Welcome!", myDisplayName, "", "", 5)
