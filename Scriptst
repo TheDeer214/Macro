@@ -197,10 +197,11 @@ screenGui.Parent = playerGui
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
+mainFrame.Size = UDim2.new(0.75, 0, 0.9, 0)
 mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 mainFrame.BackgroundColor3 = Theme.BackgroundColor3
 mainFrame.BorderSizePixel = 0
+mainFrame.ZIndex = 10
 mainFrame.Parent = screenGui
 
 local mainCorner = Instance.new("UICorner")
@@ -339,6 +340,7 @@ toggleButton.BorderSizePixel = 0
 toggleButton.Text = "="
 toggleButton.TextSize = 22
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.ZIndex = 11
 toggleButton.Parent = toggleScreenGui
 
 local uiCorner = Instance.new("UICorner")
