@@ -1,3 +1,11 @@
+-- 🟥 Dupe check
+if getgenv().MacroSuiteRunning then
+    warn("[MACROSTRUCT IS ALREADY RUNNING].")
+    return
+end
+
+getgenv().MacroSuiteRunning = true
+
 -- 🟩 Startup
 print("V.R")
 
@@ -33,5 +41,5 @@ end)
 print("[MACROSTRUCT]")
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
--- Notification
+-- Start Notification
 loadstring(game:HttpGet("https://raw.githubusercontent.com/TheDeer214/Macro/refs/heads/main/Notification"))()
