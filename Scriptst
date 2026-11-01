@@ -1,4 +1,4 @@
--- 🟥 Notification setup
+-- 🟥 Notification startup
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 
