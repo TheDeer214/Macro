@@ -340,6 +340,7 @@ toggleButton.BorderSizePixel = 0
 toggleButton.Text = "="
 toggleButton.TextSize = 22
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleScreenGui.DisplayOrder = 2
 toggleButton.ZIndex = 67
 toggleButton.Parent = toggleScreenGui
 
