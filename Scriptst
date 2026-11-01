@@ -123,9 +123,13 @@ end
 
 -- 🟥 Dupe check
 if getgenv().MacroSuiteRunning then
-    getgenv().SharedMacroNotification("ERROR", "DUPLICATE ABORTED", "rbxassetid://94101711880666", "rbxassetid://8426701399", 5)
-    warn("[MACROSTRUCT IS ALREADY RUNNING].")
-
+    getgenv().SharedMacroNotification("ERROR", "DUPLICATE TERMINATED", "rbxassetid://94101711880666", "rbxassetid://8426701399", 3)
+    warn("[DUPLICATE TERMINATED].")
+    task.wait(1)
+    getgenv().SharedMacroNotification("NOTICE", "Duplicates may cause issues", "rbxassetid://103287906385313", "rbxassetid://87180617645775", 3)
+    task.wait(0.4)
+    getgenv().SharedMacroNotification("NOTICE", "Redirecting position", "rbxassetid://15978828004", "rbxassetid://73730549515939", 3)
+    
     return
 end
 
