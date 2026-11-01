@@ -244,9 +244,8 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- ‼️ CLICK TO TOGGLE MAIN GUI
 local isGuiVisible = true
--- local mainGuiWindow = ... (reference main window here)
+local mainGuiWindow = mainFrame
 
 toggleButton.MouseButton1Click:Connect(function()
 	if dragging then return end
@@ -255,10 +254,225 @@ toggleButton.MouseButton1Click:Connect(function()
 	
 	if mainGuiWindow then
 		mainGuiWindow.Visible = isGuiVisible
-	else
-		print("Main GUI visibility toggled to:", isGuiVisible)
 	end
 end)
 
-
 -- ⬜ Main GUI
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ==========================================
+-- THEME CONFIGURATION
+-- ==========================================
+local Theme = {
+	HeaderColor3 = Color3.fromRGB(235, 65, 65),       -- Red top header bar
+	BackgroundColor3 = Color3.fromRGB(20, 20, 24),     -- Main dark window background
+	PanelColor3 = Color3.fromRGB(15, 15, 18),         -- Inner content background
+	TabButtonColor3 = Color3.fromRGB(45, 45, 52),     -- Inactive tab color
+	TabActiveColor3 = Color3.fromRGB(70, 70, 80),     -- Active tab color
+	CardColor3 = Color3.fromRGB(40, 40, 48),          -- Macro item card color
+	AccentColor3 = Color3.fromRGB(46, 204, 113)       -- Floating green "+" button
+}
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "Macrostruct_MainGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 520, 0, 340)
+mainFrame.Position = UDim2.new(0.5, -260, 0.5, -170)
+mainFrame.BackgroundColor3 = Theme.BackgroundColor3
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = mainFrame
+
+local headerBar = Instance.new("Frame")
+headerBar.Name = "HeaderBar"
+headerBar.Size = UDim2.new(1, 0, 0, 45)
+headerBar.BackgroundColor3 = Theme.HeaderColor3
+headerBar.BorderSizePixel = 0
+headerBar.Parent = mainFrame
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 10)
+headerCorner.Parent = headerBar
+
+local headerCover = Instance.new("Frame")
+headerCover.Name = "HeaderCover"
+headerCover.Size = UDim2.new(1, 0, 0, 10)
+headerCover.Position = UDim2.new(0, 0, 1, -10)
+headerCover.BackgroundColor3 = Theme.HeaderColor3
+headerCover.BorderSizePixel = 0
+headerCover.Parent = headerBar
+
+local headerTitle = Instance.new("TextLabel")
+headerTitle.Name = "TitleLabel"
+headerTitle.Size = UDim2.new(1, -20, 1, 0)
+headerTitle.Position = UDim2.new(0, 15, 0, 0)
+headerTitle.BackgroundTransparency = 1
+headerTitle.Font = Enum.Font.GothamBold
+headerTitle.Text = "Macrostruct"
+headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+headerTitle.TextSize = 16
+headerTitle.TextXAlignment = Enum.TextXAlignment.Left
+headerTitle.Parent = headerBar
+
+local sidebar = Instance.new("Frame")
+sidebar.Name = "Sidebar"
+sidebar.Size = UDim2.new(0, 110, 1, -55)
+sidebar.Position = UDim2.new(0, 10, 0, 50)
+sidebar.BackgroundColor3 = Theme.PanelColor3
+sidebar.BorderSizePixel = 0
+sidebar.Parent = mainFrame
+
+local sidebarCorner = Instance.new("UICorner")
+sidebarCorner.CornerRadius = UDim.new(0, 8)
+sidebarCorner.Parent = sidebar
+
+local tabLayout = Instance.new("UIListLayout")
+tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+tabLayout.Padding = UDim.new(0, 8)
+tabLayout.Parent = sidebar
+
+local tabPadding = Instance.UIPadding
+local pad = Instance.new("UIPadding")
+pad.PaddingTop = UDim.new(0, 10)
+pad.Parent = sidebar
+
+local function createTabButton(name, order)
+	local btn = Instance.new("TextButton")
+	btn.Name = name .. "Tab"
+	btn.Size = UDim2.new(0, 90, 0, 35)
+	btn.BackgroundColor3 = Theme.TabButtonColor3
+	btn.BorderSizePixel = 0
+	btn.Font = Enum.Font.GothamBold
+	btn.Text = name
+	btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+	btn.TextSize = 12
+	btn.LayoutOrder = order
+	btn.Parent = sidebar
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 6)
+	corner.Parent = btn
+	
+	return btn
+end
+
+createTabButton("MAIN", 1)
+createTabButton("MACROS", 2)
+createTabButton("CONSOLE", 3)
+createTabButton("OPTIONS", 4)
+
+local contentContainer = Instance.new("Frame")
+contentContainer.Name = "ContentContainer"
+contentContainer.Size = UDim2.new(1, -135, 1, -55)
+contentContainer.Position = UDim2.new(0, 125, 0, 50)
+contentContainer.BackgroundColor3 = Theme.PanelColor3
+contentContainer.BorderSizePixel = 0
+contentContainer.Parent = mainFrame
+
+local contentCorner = Instance.new("UICorner")
+contentCorner.CornerRadius = UDim.new(0, 8)
+contentCorner.Parent = contentContainer
+
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Name = "MacrosScroll"
+scrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.BorderSizePixel = 0
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
+scrollingFrame.ScrollBarThickness = 4
+scrollingFrame.Parent = contentContainer
+
+local scrollList = Instance.new("UIListLayout")
+scrollList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+scrollList.SortOrder = Enum.SortOrder.LayoutOrder
+scrollList.Padding = UDim.new(0, 10)
+scrollList.Parent = scrollingFrame
+
+local scrollPadding = Instance.new("UIPadding")
+scrollPadding.PaddingTop = UDim.new(0, 10)
+scrollPadding.Parent = scrollingFrame
+
+local function createMacroCard(macroName)
+	local card = Instance.new("Frame")
+	card.Size = UDim2.new(0, 360, 0, 65)
+	card.BackgroundColor3 = Theme.CardColor3
+	card.BorderSizePixel = 0
+	card.Parent = scrollingFrame
+
+	local cardCorner = Instance.new("UICorner")
+	cardCorner.CornerRadius = UDim.new(0, 6)
+	cardCorner.Parent = card
+
+	local topStrip = Instance.new("Frame")
+	topStrip.Size = UDim2.new(1, 0, 0, 12)
+	topStrip.BackgroundColor3 = Color3.fromRGB(52, 152, 219)
+	topStrip.BorderSizePixel = 0
+	topStrip.Parent = card
+	
+	local stripCorner = Instance.new("UICorner")
+	stripCorner.CornerRadius = UDim.new(0, 6)
+	stripCorner.Parent = topStrip
+
+	local fixStrip = Instance.new("Frame")
+	fixStrip.Size = UDim2.new(1, 0, 0, 4)
+	fixStrip.Position = UDim2.new(0, 0, 1, -4)
+	fixStrip.BackgroundColor3 = Color3.fromRGB(52, 152, 219)
+	fixStrip.BorderSizePixel = 0
+	fixStrip.Parent = topStrip
+
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.Size = UDim2.new(0, 250, 0, 20)
+	nameLabel.Position = UDim2.new(0, 10, 0, 18)
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Font = Enum.Font.GothamBold
+	nameLabel.Text = "[" .. macroName .. "]"
+	nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	nameLabel.TextSize = 13
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+	nameLabel.Parent = card
+
+	local timeString = os.date("%Y-%m-%d-%H")
+	local timeLabel = Instance.new("TextLabel")
+	timeLabel.Size = UDim2.new(0, 250, 0, 15)
+	timeLabel.Position = UDim2.new(0, 10, 0, 38)
+	timeLabel.BackgroundTransparency = 1
+	timeLabel.Font = Enum.Font.Gotham
+	timeLabel.Text = "[" .. timeString .. "]"
+	timeLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
+	timeLabel.TextSize = 10
+	timeLabel.TextXAlignment = Enum.TextXAlignment.Left
+	timeLabel.Parent = card
+end
+
+-- Generate a sample card
+createMacroCard("Auto-Farm Routine")
+
+local addMacroBtn = Instance.new("TextButton")
+addMacroBtn.Name = "AddMacroButton"
+addMacroBtn.Size = UDim2.new(0, 40, 0, 40)
+addMacroBtn.Position = UDim2.new(1, -50, 1, -50)
+addMacroBtn.BackgroundColor3 = Theme.AccentColor3
+addMacroBtn.BorderSizePixel = 0
+addMacroBtn.Font = Enum.Font.GothamBold
+addMacroBtn.Text = "+"
+addMacroBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+addMacroBtn.TextSize = 22
+addMacroBtn.Parent = contentContainer
+
+local addCorner = Instance.new("UICorner")
+addCorner.CornerRadius = UDim.new(0.5, 0)
+addCorner.Parent = addMacroBtn
+
