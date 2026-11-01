@@ -62,7 +62,7 @@ local function ShowNotification(title, message, iconId, soundId, duration)
 	if hasSound then
 		local sound = Instance.new("Sound")
 		sound.SoundId = soundId
-		sound.Volume = 0.7
+		sound.Volume = 2
 		sound.Parent = notifFrame
 		sound:Play()
 	end
@@ -129,5 +129,5 @@ local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 -- ==========================================
 
 ShowNotification("Macrostruct", "Loaded successfully!", "rbxassetid://12433138134", "rbxassetid://9114302479", 5)
-task.wait(1)
+task.wait(2)
 ShowNotification("Welcome!", myDisplayName, "", "rbxassetid://139945781730068", 5)
