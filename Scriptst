@@ -425,6 +425,29 @@ toggleButton.Activated:Connect(function()
 	end
 end)
 
+-- 🟥 Test
+local mainTab = mainTabFrame -- (From your Main tab setup)
+local consoleTab = consoleTabFrame
+
+-- Find the buttons
+local sidebarButtons = sidebar:GetChildren()
+for _, child in ipairs(sidebarButtons) do
+	if child:IsA("TextButton") then
+		child.Activated:Connect(function()
+			-- Hide everything first
+			mainTab.Visible = false
+			consoleTab.Visible = false
+			
+			-- Show based on button name
+			if child.Name == "MAINTab" then
+				mainTab.Visible = true
+			elseif child.Name == "CONSOLETAB" then
+				consoleTab.Visible = true
+			end
+		end)
+	end
+end
+
 -- ⬜ Main Tab
 local mainTabFrame = Instance.new("Frame")
 mainTabFrame.Name = "MainTab"
@@ -465,3 +488,69 @@ stuffLabel.Text = "STUFF"
 stuffLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
 stuffLabel.TextSize = 16
 stuffLabel.Parent = stuffCard
+
+-- ⬜ Console
+local LogService = game:GetService("LogService")
+
+local consoleTabFrame = Instance.new("Frame")
+consoleTabFrame.Name = "ConsoleTab"
+consoleTabFrame.Size = UDim2.new(1, 0, 1, 0)
+consoleTabFrame.BackgroundTransparency = 1
+consoleTabFrame.Visible = false -- Starts hidden, toggle when CONSOLE tab is clicked
+consoleTabFrame.Parent = contentContainer
+
+local consoleScroll = Instance.new("ScrollingFrame")
+consoleScroll.Name = "ConsoleScroll"
+consoleScroll.Size = UDim2.new(1, -30, 1, -30)
+consoleScroll.Position = UDim2.new(0, 15, 0, 15)
+consoleScroll.BackgroundColor3 = Theme.PanelColor3
+consoleScroll.BorderSizePixel = 0
+consoleScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+consoleScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+consoleScroll.ScrollBarThickness = 4
+consoleScroll.Parent = consoleTabFrame
+
+local consoleCorner = Instance.new("UICorner")
+consoleCorner.CornerRadius = UDim.new(0, 8)
+consoleCorner.Parent = consoleScroll
+
+local consoleLayout = Instance.new("UIListLayout")
+consoleLayout.SortOrder = Enum.SortOrder.LayoutOrder
+consoleLayout.Padding = UDim.new(0, 4)
+consoleLayout.Parent = consoleScroll
+
+local consolePadding = Instance.new("UIPadding")
+consolePadding.PaddingTop = UDim.new(0, 8)
+consolePadding.PaddingBottom = UDim.new(0, 8)
+consolePadding.PaddingLeft = UDim.new(0, 8)
+consolePadding.PaddingRight = UDim.new(0, 8)
+consolePadding.Parent = consoleScroll
+
+local function addLogMessage(message, messageType)
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Size = UDim2.new(1, 0, 0, 18)
+	textLabel.BackgroundTransparency = 1
+	textLabel.Font = Enum.Font.Code
+	textLabel.TextSize = 11
+	textLabel.TextXAlignment = Enum.TextXAlignment.Left
+	textLabel.TextWrapped = true
+	textLabel.Text = message
+	
+	if messageType == Enum.MessageType.MessageWarning then
+		textLabel.TextColor3 = Color3.fromRGB(241, 196, 15) -- Yellow for warnings
+	elseif messageType == Enum.MessageType.MessageError then
+		textLabel.TextColor3 = Color3.fromRGB(231, 76, 60)  -- Red for errors
+	else
+		textLabel.TextColor3 = Color3.fromRGB(200, 200, 200) -- Light grey for standard prints
+	end
+	
+	textLabel.Parent = consoleScroll
+end
+
+LogService.MessageOut:Connect(function(message, messageType)
+	addLogMessage(message, messageType)
+end)
+
+-- ‼️ TEST CUSTOM CONSOLE ‼️
+print("Macrostruct initialized successfully.")
+warn("This is a test warning message.")
