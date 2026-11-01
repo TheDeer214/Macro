@@ -176,6 +176,7 @@ getgenv().SharedMacroNotification("Welcome!", myDisplayName, "", "rbxassetid://1
 -- ⬜ Show/hider toggle
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local GuiService = game:GetService("GuiService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -191,7 +192,7 @@ toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 20, 0, 20)
 toggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 toggleButton.BorderSizePixel = 0
-toggleButton.Text = "="
+toggleButton.Text = "[ ]"
 toggleButton.TextSize = 22
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Parent = toggleScreenGui
@@ -199,11 +200,6 @@ toggleButton.Parent = toggleScreenGui
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0, 10)
 uiCorner.Parent = toggleButton
-
-local uiStroke = Instance.new("UIStroke")
-uiStroke.Color = Color3.fromRGB(60, 60, 60)
-uiStroke.Thickness = 1.5
-uiStroke.Parent = toggleButton
 
 local dragging = false
 local dragInput, mousePos, framePos
@@ -231,24 +227,32 @@ end)
 UserInputService.InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
 		local delta = input.Position - mousePos
-		toggleButton.Position = UDim2.new(
-			framePos.X.Scale, 
-			framePos.X.Offset + delta.X, 
-			framePos.Y.Scale, 
-			framePos.Y.Offset + delta.Y
-		)
+		
+		-- Calculate raw new absolute positions
+		local newX = framePos.X.Offset + delta.X
+		local newY = framePos.Y.Offset + delta.Y
+		
+		-- Get screen size dynamically (accounting for mobile notches/gui inset if needed)
+		local screenSize = toggleScreenGui.AbsoluteSize
+		local buttonSize = toggleButton.AbsoluteSize
+		
+		-- Clamp values so it can never leave the visible screen borders
+		local clampedX = math.clamp(newX, 0, screenSize.X - buttonSize.X)
+		local clampedY = math.clamp(newY, 0, screenSize.Y - buttonSize.Y)
+		
+		toggleButton.Position = UDim2.new(0, clampedX, 0, clampedY)
 	end
 end)
 
+-- ‼️ CLICK TO TOGGLE MAIN GUI
 local isGuiVisible = true
--- local mainGuiWindow = ... (reference your main window here)
+-- local mainGuiWindow = ... (reference main window here)
 
 toggleButton.MouseButton1Click:Connect(function()
 	if dragging then return end
 	
 	isGuiVisible = not isGuiVisible
 	
-	-- ‼️ TEMPLATE
 	if mainGuiWindow then
 		mainGuiWindow.Visible = isGuiVisible
 	else
@@ -256,6 +260,5 @@ toggleButton.MouseButton1Click:Connect(function()
 	end
 end)
 
--- ✅ TEMPLATE END
 
 -- ⬜ Main GUI
