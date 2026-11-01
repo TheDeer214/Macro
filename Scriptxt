@@ -1,5 +1,5 @@
 -- 🟩 Startup
-print("V.S")
+print("V.F")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -32,6 +32,17 @@ end)
 -- 🟩 ID
 print("[Script ID: " .. _G.MacroStats.ExecutionCount .. "]")
 
+-- Notification setup
+local StarterGui = game:GetService("StarterGui")
+
+-- 🟩 Fire notification
+StarterGui:SetCore("SendNotification", {
+	Title = "MacroSuite",
+	Text = "Loaded successfully!",
+    Icon = "rbxassetid://18465867001"
+    Duration = 5
+})
+
 -- SFX
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://9114302200"
@@ -43,18 +54,6 @@ local function playSFX()
 end
 
 playSFX()
-
-
--- Notification setup
-local StarterGui = game:GetService("StarterGui")
-
--- 🟩 Fire notification
-StarterGui:SetCore("SendNotification", {
-	Title = "MacroSuite",
-	Text = "Loaded successfully!",
-    Icon = "rbxassetid://18465867001"
-    Duration = 5
-})
 
 -- 🟩 Printing
 print("[MACROSUITE]")
