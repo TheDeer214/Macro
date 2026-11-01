@@ -1,0 +1,130 @@
+-- Startup
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "NotificationGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local activeNotifications = {}
+
+local function UpdateNotificationPositions()
+	for index, frame in ipairs(activeNotifications) do
+		local targetY = 20 + ((index - 1) * 80)
+		local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+		
+		TweenService:Create(frame, tweenInfo, {
+			Position = UDim2.new(1, -270, 0, targetY)
+		}):Play()
+	end
+end
+
+-- @param title string: The header of the notification
+-- @param message string: The body text
+-- @param iconId string? (Optional): The rbxassetid:// string for the image icon
+-- @param soundId string? (Optional): The rbxassetid:// string for the sound effect
+-- @param duration number? (Optional): How long the notification stays visible (default: 3)
+local function ShowNotification(title, message, iconId, soundId, duration)
+	duration = duration or 3
+	local hasIcon = iconId and iconId ~= ""
+	local hasSound = soundId and soundId ~= ""
+
+	local notifFrame = Instance.new("Frame")
+	notifFrame.Name = "NotificationItem"
+	notifFrame.Size = UDim2.new(0, 260, 0, 70)
+	notifFrame.Position = UDim2.new(1, 10, 0, 20)
+	notifFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	notifFrame.BorderSizePixel = 0
+	notifFrame.Parent = screenGui
+
+	local uiCorner = Instance.new("UICorner")
+	uiCorner.CornerRadius = UDim.new(0, 8)
+	uiCorner.Parent = notifFrame
+
+	if hasIcon then
+		local icon = Instance.new("ImageLabel")
+		icon.Name = "Icon"
+		icon.Size = UDim2.new(0, 45, 0, 45)
+		icon.Position = UDim2.new(0, 12, 0, 12)
+		icon.BackgroundTransparency = 1
+		icon.Image = iconId
+		icon.Parent = notifFrame
+
+		local iconCorner = Instance.new("UICorner")
+		iconCorner.CornerRadius = UDim.new(1, 0)
+		iconCorner.Parent = icon
+	end
+
+	if hasSound then
+		local sound = Instance.new("Sound")
+		sound.SoundId = soundId
+		sound.Volume = 0.7
+		sound.Parent = notifFrame
+		sound:Play()
+	end
+
+	local textXPos = hasIcon and 68 or 15
+	local textWidth = hasIcon and 180 or 230
+
+	local titleLabel = Instance.new("TextLabel")
+	titleLabel.Name = "Title"
+	titleLabel.Size = UDim2.new(0, textWidth, 0, 20)
+	titleLabel.Position = UDim2.new(0, textXPos, 0, 12)
+	titleLabel.BackgroundTransparency = 1
+	titleLabel.Font = Enum.Font.GothamBold
+	titleLabel.Text = title
+	titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	titleLabel.TextSize = 14
+	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	titleLabel.Parent = notifFrame
+
+	local messageLabel = Instance.new("TextLabel")
+	messageLabel.Name = "Message"
+	messageLabel.Size = UDim2.new(0, textWidth, 0, 25)
+	messageLabel.Position = UDim2.new(0, textXPos, 0, 32)
+	messageLabel.BackgroundTransparency = 1
+	messageLabel.Font = Enum.Font.Gotham
+	messageLabel.Text = message
+	messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+	messageLabel.TextSize = 12
+	messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+	messageLabel.TextWrapped = true
+	messageLabel.Parent = notifFrame
+
+	table.insert(activeNotifications, 1, notifFrame)
+	UpdateNotificationPositions()
+
+	local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	local tweenIn = TweenService:Create(notifFrame, tweenInfo, {Position = UDim2.new(1, -270, 0, notifFrame.Position.Y.Offset)})
+	tweenIn:Play()
+
+	task.delay(duration, function()
+		local slideOutGoal = {Position = UDim2.new(1, 10, 0, notifFrame.Position.Y.Offset)}
+		local tweenOut = TweenService:Create(notifFrame, tweenInfo, slideOutGoal)
+		tweenOut:Play()
+		
+		tweenOut.Completed:Connect(function()
+			for i, frame in ipairs(activeNotifications) do
+				if frame == notifFrame then
+					table.remove(activeNotifications, i)
+					break
+				end
+			end
+			UpdateNotificationPositions()
+			notifField = nil
+			notifFrame:Destroy()
+		end)
+	end)
+end
+
+-- ==========================================
+
+-- ==========================================
+
+-- ShowNotification("Friend Request", "User123 sent a request!", "rbxassetid://6023426915", "rbxassetid://4590657391", 4)
+-- task.wait(0.5)
+-- ShowNotification("System Alert", "Inventory updated successfully.", nil, "", 3)
