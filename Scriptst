@@ -1,5 +1,5 @@
 -- 🟩 Startup
-print("V.E")
+print("V.Q")
 
 local HttpService = game:GetService("HttpService")
 local fileName = "MacroSuiteStats.json"
@@ -45,7 +45,7 @@ StarterGui:SetCore("SendNotification", {
 
 -- SFX
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://12433138199"
+sound.SoundId = "rbxassetid://12433138134"
 sound.Volume = 1
 sound.Parent = workspace
 
