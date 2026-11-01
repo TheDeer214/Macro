@@ -1,10 +1,10 @@
+-- 🟥 Notification setup
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- 1. Use a global check so multiple scripts share ONE notification system
 if not getgenv().SharedMacroNotification then
 	local screenGui = Instance.new("ScreenGui")
 	screenGui.Name = "MacroSuite_NotificationGui"
@@ -24,7 +24,6 @@ if not getgenv().SharedMacroNotification then
 		end
 	end
 
-	-- Global function accessible by any other script in your suite
 	getgenv().SharedMacroNotification = function(title, message, iconId, soundId, duration)
 		duration = duration or 3
 		local hasIcon = iconId and iconId ~= ""
