@@ -1,5 +1,5 @@
 -- 🟩 Printing
-print("N.A")
+print("N.1")
 
 -- 🟥 Base Build
 local TweenService = game:GetService("TweenService")
@@ -132,5 +132,5 @@ local myDisplayName = game:GetService("Players").LocalPlayer.DisplayName
 -- ==========================================
 
 ShowNotification("Macrostruct", "Loaded successfully!", "rbxassetid://12433138134", "rbxassetid://9114302479", 5)
-task.wait(2)
-ShowNotification("Welcome!", myDisplayName, "", "rbxassetid://139945781730068", 5)
+task.wait(1)
+ShowNotification("Welcome!", myDisplayName, "", "rbxassetid://15675016548", 5)
