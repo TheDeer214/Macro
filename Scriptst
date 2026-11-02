@@ -404,12 +404,13 @@ local player = Players.LocalPlayer
 local fileName = "macrostruct_settings.json"
 
 local optionsSettings = {
-	DefaultDelay = 0.5,
+	DefaultDelay = 0.1,
 	DebugMode = false,
 	PanicButtonEnabled = true,
 	PersistentLoading = false
 }
 
+-- 1. Load settings from file on startup
 local function loadSettings()
 	if pcall(function() return isfile and isfile(fileName) end) and isfile(fileName) then
 		local success, decoded = pcall(function()
@@ -427,14 +428,7 @@ end
 
 loadSettings()
 
-if optionsSettings.PersistentLoading then
-	local lastExit = optionsSettings.LastExitTime or 0
-	local timePassed = os.time() - lastExit
-	if timePassed > 0 and timePassed < 10 then
-		print("[Macrostruct] Persistent loading triggered! Rejoined within " .. timePassed .. "s.")
-	end
-end
-
+-- 2. Save settings function
 local function saveSettings()
 	local success, encoded = pcall(function()
 		return HttpService:JSONEncode(optionsSettings)
@@ -444,6 +438,17 @@ local function saveSettings()
 	end
 end
 
+-- 3. Check if we rejoined within 10 seconds of leaving
+if optionsSettings.PersistentLoading then
+	local lastExit = optionsSettings.LastExitTime or 0
+	local timePassed = os.time() - lastExit
+	if timePassed > 0 and timePassed < 10 then
+		print("[Macrostruct] Persistent loading triggered! Rejoined within " .. timePassed .. "s.")
+		-- Placeholder: Insert your script auto-reinitialization logic here
+	end
+end
+
+-- 4. Track exit time when the player leaves
 Players.PlayerRemoving:Connect(function(plr)
 	if plr == player and optionsSettings.PersistentLoading then
 		optionsSettings.LastExitTime = os.time()
