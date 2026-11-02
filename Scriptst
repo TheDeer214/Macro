@@ -404,7 +404,7 @@ local player = Players.LocalPlayer
 local fileName = "macrostruct_settings.json"
 
 local optionsSettings = {
-	DefaultDelay = 0.5,
+	DefaultDelay = 0.1,
 	DebugMode = false,
 	PanicButtonEnabled = true
 }
