@@ -696,3 +696,290 @@ toggleButton.Activated:Connect(function()
 		end
 	end
 end)
+
+-- Macrostruct: Macros Tab & Creation Hub Setup
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+
+local macrosTabFrame = tabFrames["MACROS"]
+local macroFileName = "macrostruct_macros.json"
+
+-- Theme configuration addition for the macro header accent
+Theme.MacroHeaderColor3 = Color3.fromRGB(52, 152, 219) -- Default light blue accent from design
+
+local savedMacros = {}
+
+-- 1. Load existing macros from file
+local function loadMacros()
+	if pcall(function() return isfile and isfile(macroFileName) end) and isfile(macroFileName) then
+		local success, decoded = pcall(function()
+			return HttpService:JSONDecode(readfile(macroFileName))
+		end)
+		if success and type(decoded) == "table" then
+			savedMacros = decoded
+		end
+	end
+end
+
+loadMacros()
+
+-- 2. Save macros to file
+local function saveMacros()
+	local success, encoded = pcall(function()
+		return HttpService:JSONEncode(savedMacros)
+	end)
+	if success and writefile then
+		writefile(macroFileName, encoded)
+	end
+end
+
+-- Scrollable container for macros list
+local macrosScroll = Instance.new("ScrollingFrame")
+macrosScroll.Size = UDim2.new(1, -30, 1, -30)
+macrosScroll.Position = UDim2.new(0, 15, 0, 15)
+macrosScroll.BackgroundTransparency = 1
+macrosScroll.BorderSizePixel = 0
+macrosScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+macrosScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+macrosScroll.ScrollBarThickness = 4
+macrosScroll.Parent = macrosTabFrame
+
+-- Use UIListLayout with reverse order so new creations stack at the top if desired, or standard layout with manual sorting
+local macrosLayout = Instance.new("UIListLayout")
+macrosLayout.SortOrder = Enum.SortOrder.LayoutOrder
+macrosLayout.Padding = UDim.new(0, 10)
+macrosLayout.Parent = macrosScroll
+
+-- Floating "+" button that ignores scroll (parented directly to the tab frame)
+local addMacroBtn = Instance.new("TextButton")
+addMacroBtn.Size = UDim2.new(0, 45, 0, 45)
+addMacroBtn.Position = UDim2.new(1, -60, 1, -60)
+addMacroBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+addMacroBtn.BorderSizePixel = 0
+addMacroBtn.Font = Enum.Font.GothamBold
+addMacroBtn.Text = "+"
+addMacroBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+addMacroBtn.TextSize = 22
+addMacroBtn.ZIndex = 5
+addMacroBtn.Parent = macrosTabFrame
+
+local addCorner = Instance.new("UICorner")
+addCorner.CornerRadius = UDim.new(1, 0)
+addCorner.Parent = addMacroBtn
+
+-- Function to render a macro card in the scroll list
+local function renderMacroCard(macroData, index)
+	local card = Instance.new("Frame")
+	card.Size = UDim2.new(1, 0, 0, 75)
+	card.BackgroundColor3 = Theme.CardColor3
+	card.BorderSizePixel = 0
+	card.LayoutOrder = index
+	card.Parent = macrosScroll
+
+	local cardCorner = Instance.new("UICorner")
+	cardCorner.CornerRadius = UDim.new(0, 6)
+	cardCorner.Parent = card
+
+	-- Top colored header strip
+	local headerStrip = Instance.new("Frame")
+	headerStrip.Size = UDim2.new(1, 0, 0, 22)
+	headerStrip.BackgroundColor3 = Theme.MacroHeaderColor3
+	headerStrip.BorderSizePixel = 0
+	headerStrip.Parent = card
+
+	local stripCorner = Instance.new("UICorner")
+	stripCorner.CornerRadius = UDim.new(0, 6)
+	headerStrip.Parent = card
+	-- Fix bottom corners of header strip to stay square
+	local stripCover = Instance.new("Frame")
+	stripCover.Size = UDim2.new(1, 0, 0, 6)
+	stripCover.Position = UDim2.new(0, 0, 1, -6)
+	stripCover.BackgroundColor3 = Theme.MacroHeaderColor3
+	stripCover.BorderSizePixel = 0
+	stripCover.Parent = headerStrip
+
+	-- Animated Toggle Switch inside the header
+	local toggleBg = Instance.new("TextButton")
+	toggleBg.Size = UDim2.new(0, 36, 0, 16)
+	toggleBg.Position = UDim2.new(1, -44, 0.5, -8)
+	toggleBg.BackgroundColor3 = macroData.enabled and Color3.fromRGB(46, 204, 113) or Color3.fromRGB(231, 76, 60)
+	toggleBg.BorderSizePixel = 0
+	toggleBg.Text = ""
+	toggleBg.Parent = headerStrip
+
+	local toggleBgCorner = Instance.new("UICorner")
+	toggleBgCorner.CornerRadius = UDim.new(1, 0)
+	toggleBgCorner.Parent = toggleBg
+
+	local toggleBall = Instance.new("Frame")
+	toggleBall.Size = UDim2.new(0, 12, 0, 12)
+	toggleBall.Position = macroData.enabled and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
+	toggleBall.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	toggleBall.BorderSizePixel = 0
+	toggleBall.Parent = toggleBg
+
+	local ballCorner = Instance.new("UICorner")
+	ballCorner.CornerRadius = UDim.new(1, 0)
+	ballCorner.Parent = toggleBall
+
+	toggleBg.Activated:Connect(function()
+		macroData.enabled = not macroData.enabled
+		
+		local targetColor = macroData.enabled and Color3.fromRGB(46, 204, 113) or Color3.fromRGB(231, 76, 60)
+		local targetPos = macroData.enabled and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
+		
+		TweenService:Create(toggleBg, TweenInfo.new(0.2), {BackgroundColor3 = targetColor}):Play()
+		TweenService:Create(toggleBall, TweenInfo.new(0.2), {Position = targetPos}):Play()
+		
+		saveMacros()
+	end)
+
+	-- Macro Name Label
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.Size = UDim2.new(1, -20, 0, 22)
+	nameLabel.Position = UDim2.new(0, 12, 0, 26)
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Font = Enum.Font.GothamBold
+	nameLabel.Text = macroData.name
+	nameLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+	nameLabel.TextSize = 13
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+	nameLabel.Parent = card
+
+	-- Creation Date Label (Format: YYYY-MM-DD HH:MM)
+	local dateLabel = Instance.new("TextLabel")
+	dateLabel.Size = UDim2.new(1, -20, 0, 16)
+	dateLabel.Position = UDim2.new(0, 12, 0, 48)
+	dateLabel.BackgroundTransparency = 1
+	dateLabel.Font = Enum.Font.Gotham
+	dateLabel.Text = macroData.created
+	dateLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+	dateLabel.TextSize = 11
+	dateLabel.TextXAlignment = Enum.TextXAlignment.Left
+	dateLabel.Parent = card
+
+	-- Settings / Configure Button gear icon
+	local gearBtn = Instance.new("TextButton")
+	gearBtn.Size = UDim2.new(0, 24, 0, 24)
+	gearBtn.Position = UDim2.new(1, -32, 1, -28)
+	gearBtn.BackgroundTransparency = 1
+	gearBtn.Font = Enum.Font.GothamBold
+	gearBtn.Text = "⚙"
+	gearBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+	gearBtn.TextSize = 16
+	gearBtn.Parent = card
+
+	gearBtn.Activated:Connect(function()
+		print("Opening configuration for macro: " .. macroData.name)
+	end)
+end
+
+-- Load existing saved macros into view
+for i, macro in ipairs(savedMacros) do
+	renderMacroCard(macro, i)
+end
+
+-- Macro Creation Popup Modal (Matches user design spec: centered box ignoring scroll, placed above everything)
+local function openCreationPopup()
+	local overlay = Instance.new("TextButton")
+	overlay.Size = UDim2.new(1, 0, 1, 0)
+	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
+	overlay.BackgroundTransparency = 0.5
+	overlay.BorderSizePixel = 0
+	overlay.Text = ""
+	overlay.ZIndex = 10
+	overlay.Parent = macrosTabFrame
+
+	local modalBox = Instance.new("Frame")
+	modalBox.Size = UDim2.new(0, 320, 0, 160)
+	modalBox.Position = UDim2.new(0.5, -160, 0.5, -80)
+	modalBox.BackgroundColor3 = Theme.CardColor3
+	modalBox.BorderSizePixel = 0
+	modalBox.ZIndex = 11
+	modalBox.Parent = overlay
+
+	local modalCorner = Instance.new("UICorner")
+	modalCorner.CornerRadius = UDim.new(0, 8)
+	modalCorner.Parent = modalBox
+
+	local modalHeader = Instance.new("Frame")
+	modalHeader.Size = UDim2.new(1, 0, 0, 30)
+	modalHeader.BackgroundColor3 = Theme.MacroHeaderColor3
+	modalHeader.BorderSizePixel = 0
+	modalHeader.ZIndex = 11
+	modalHeader.Parent = modalBox
+
+	local modalHeaderCorner = Instance.new("UICorner")
+	modalHeaderCorner.CornerRadius = UDim.new(0, 8)
+	modalHeader.Parent = modalBox
+
+	local closeBtn = Instance.new("TextButton")
+	closeBtn.Size = UDim2.new(0, 30, 0, 30)
+	closeBtn.BackgroundTransparency = 1
+	closeBtn.Font = Enum.Font.GothamBold
+	closeBtn.Text = "✕"
+	closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	closeBtn.TextSize = 12
+	closeBtn.ZIndex = 12
+	closeBtn.Parent = modalHeader
+
+	closeBtn.Activated:Connect(function()
+		overlay:Destroy()
+	end)
+
+	local nameInput = Instance.new("TextBox")
+	nameInput.Size = UDim2.new(1, -24, 0, 36)
+	nameInput.Position = UDim2.new(0, 12, 0, 45)
+	nameInput.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+	nameInput.BorderSizePixel = 0
+	nameInput.Font = Enum.Font.GothamBold
+	nameInput.PlaceholderText = "Macro Name"
+	nameInput.Text = "Untitled"
+	nameInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+	nameInput.TextSize = 13
+	nameInput.ZIndex = 12
+	nameInput.Parent = modalBox
+
+	local inputCorner = Instance.new("UICorner")
+	inputCorner.CornerRadius = UDim.new(0, 6)
+	inputCorner.Parent = nameInput
+
+	local createBtn = Instance.new("TextButton")
+	createBtn.Size = UDim2.new(0, 90, 0, 32)
+	createBtn.Position = UDim2.new(1, -102, 1, -44)
+	createBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+	createBtn.BorderSizePixel = 0
+	createBtn.Font = Enum.Font.GothamBold
+	createBtn.Text = "CREATE"
+	createBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	createBtn.TextSize, createBtn.ZIndex = 11, 12
+	createBtn.Parent = modalBox
+
+	local createCorner = Instance.new("UICorner")
+	createCorner.CornerRadius = UDim.new(0, 6)
+	createCorner.Parent = createBtn
+
+	createBtn.Activated:Connect(function()
+		local newMacro = {
+			name = nameInput.Text ~= "" and nameInput.Text or "Untitled",
+			created = os.date("%Y-%m-%d %H:%M"),
+			enabled = true,
+			blocks = {}
+		}
+		
+		table.insert(savedMacros, 1, newMacro) -- Insert at top
+		saveMacros()
+		
+		-- Refresh UI list quickly
+		for _, child in ipairs(macrosScroll:GetChildren()) do
+			if child:IsA("Frame") then child:Destroy() end
+		end
+		for i, macro in ipairs(savedMacros) do
+			renderMacroCard(macro, i)
+		end
+		
+		overlay:Destroy()
+	end)
+end
+
+addMacroBtn.Activated:Connect(openCreationPopup)
