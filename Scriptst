@@ -366,9 +366,7 @@ consolePadding.PaddingLeft = UDim.new(0, 8)
 consolePadding.PaddingRight = UDim.new(0, 8)
 consolePadding.Parent = consoleScroll
 
-local function appendLog(msg, msgType)
-	local timestamp = os.date("%H:%M:%S")
-	
+local function appendLog(msg, msgType, isHistory)
 	local lbl = Instance.new("TextLabel")
 	lbl.Size = UDim2.new(1, 0, 0, 18)
 	lbl.BackgroundTransparency = 1
@@ -376,7 +374,9 @@ local function appendLog(msg, msgType)
 	lbl.TextSize = 11
 	lbl.TextXAlignment = Enum.TextXAlignment.Left
 	lbl.TextWrapped = true
-	lbl.Text = "[" .. timestamp .. "] -- " .. msg
+
+	local timestamp = isHistory and "[--:--:--]" or "[" .. os.date("%H:%M:%S") .. "]"
+	lbl.Text = timestamp .. " -- " .. msg
 	
 	if msgType == Enum.MessageType.MessageWarning then
 		lbl.TextColor3 = Color3.fromRGB(241, 196, 15)
@@ -389,11 +389,11 @@ local function appendLog(msg, msgType)
 end
 
 for _, logItem in ipairs(LogService:GetLogHistory()) do
-	appendLog(logItem.message, logItem.messageType)
+	appendLog(logItem.message, logItem.messageType, true)
 end
 
 LogService.MessageOut:Connect(function(msg, msgType)
-	appendLog(msg, msgType)
+	appendLog(msg, msgType, false)
 end)
 
 -- OPTIONS TAB CONTENT -- ‼️
