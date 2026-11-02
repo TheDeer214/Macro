@@ -404,10 +404,10 @@ local player = Players.LocalPlayer
 local fileName = "macrostruct_settings.json"
 
 local optionsSettings = {
-	DefaultDelay = 0.1,
+	DefaultDelay = 0.5,
 	DebugMode = false,
-	PanicButtonEnabled = true
-    PersistentLoading = false
+	PanicButtonEnabled = true,
+	PersistentLoading = false
 }
 
 local function loadSettings()
@@ -432,7 +432,6 @@ if optionsSettings.PersistentLoading then
 	local timePassed = os.time() - lastExit
 	if timePassed > 0 and timePassed < 10 then
 		print("[Macrostruct] Persistent loading triggered! Rejoined within " .. timePassed .. "s.")
-		-- Placeholder
 	end
 end
 
