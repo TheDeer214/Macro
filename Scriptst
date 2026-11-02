@@ -367,6 +367,8 @@ consolePadding.PaddingRight = UDim.new(0, 8)
 consolePadding.Parent = consoleScroll
 
 local function appendLog(msg, msgType)
+	local timestamp = os.date("%H:%M:%S")
+	
 	local lbl = Instance.new("TextLabel")
 	lbl.Size = UDim2.new(1, 0, 0, 18)
 	lbl.BackgroundTransparency = 1
@@ -374,11 +376,7 @@ local function appendLog(msg, msgType)
 	lbl.TextSize = 11
 	lbl.TextXAlignment = Enum.TextXAlignment.Left
 	lbl.TextWrapped = true
-
-	local timeData = os.date("*t")
-	local timestamp = string.format("[%02d:%02d:%02d]", timeData.hour, timeData.min, timeData.sec)
-
-	lbl.Text = timestamp .. " -- " .. tostring(msg)
+	lbl.Text = "[" .. timestamp .. "] -- " .. msg
 	
 	if msgType == Enum.MessageType.MessageWarning then
 		lbl.TextColor3 = Color3.fromRGB(241, 196, 15)
