@@ -407,6 +407,7 @@ local optionsSettings = {
 	DefaultDelay = 0.1,
 	DebugMode = false,
 	PanicButtonEnabled = true
+    PersistentLoading = false
 }
 
 local function loadSettings()
@@ -426,6 +427,15 @@ end
 
 loadSettings()
 
+if optionsSettings.PersistentLoading then
+	local lastExit = optionsSettings.LastExitTime or 0
+	local timePassed = os.time() - lastExit
+	if timePassed > 0 and timePassed < 10 then
+		print("[Macrostruct] Persistent loading triggered! Rejoined within " .. timePassed .. "s.")
+		-- Placeholder
+	end
+end
+
 local function saveSettings()
 	local success, encoded = pcall(function()
 		return HttpService:JSONEncode(optionsSettings)
@@ -434,6 +444,13 @@ local function saveSettings()
 		writefile(fileName, encoded)
 	end
 end
+
+Players.PlayerRemoving:Connect(function(plr)
+	if plr == player and optionsSettings.PersistentLoading then
+		optionsSettings.LastExitTime = os.time()
+		saveSettings()
+	end
+end)
 
 local optionsTabFrame = tabFrames["OPTIONS"]
 
@@ -452,7 +469,6 @@ optionsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 optionsLayout.Padding = UDim.new(0, 10)
 optionsLayout.Parent = optionsScroll
 
--- Panic Button implementation outside main GUI (Created early so we can reference it)
 local panicScreenGui = Instance.new("ScreenGui")
 panicScreenGui.Name = "Macrostruct_PanicGui"
 panicScreenGui.ResetOnSpawn = false
