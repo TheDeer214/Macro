@@ -618,6 +618,7 @@ end
 createOptionInput("Default Action Delay", "Pause duration between steps.", "DefaultDelay")
 createOptionToggle("Debug Mode", "Stream verbose outputs to console.", "DebugMode")
 createOptionToggle("Panic Button", "Show quick stop toggle on top-left.", "PanicButtonEnabled")
+createOptionToggle("Persistent Loading", "Rejoining auto-reloads the script.", "PersistentLoading")
 
 -- ⬜ Logic stuffs
 local UserInputService = game:GetService("UserInputService")
