@@ -601,7 +601,6 @@ end
 createOptionInput("Default Action Delay", "Pause duration between steps.", "DefaultDelay")
 createOptionToggle("Debug Mode", "Stream verbose outputs to console.", "DebugMode")
 createOptionToggle("Panic Button", "Show quick stop toggle on top-left.", "PanicButtonEnabled")
-createOptionToggle("Persistent Loading", "Rejoining auto-reloads the script.", "PersistentLoading")
 
 -- ⬜ Logic stuffs
 local UserInputService = game:GetService("UserInputService")
@@ -697,7 +696,7 @@ toggleButton.Activated:Connect(function()
 	end
 end)
 
--- Macrostruct: Macros Tab & Creation Hub Setup
+-- Macrostruct: Macros Tab & Creation Hub Setup (Rounded Headers)
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 
@@ -705,7 +704,7 @@ local macrosTabFrame = tabFrames["MACROS"]
 local macroFileName = "macrostruct_macros.json"
 
 -- Theme configuration addition for the macro header accent
-Theme.MacroHeaderColor3 = Color3.fromRGB(52, 152, 219) -- Default light blue accent from design
+Theme.MacroHeaderColor3 = Color3.fromRGB(52, 152, 219)
 
 local savedMacros = {}
 
@@ -744,13 +743,12 @@ macrosScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 macrosScroll.ScrollBarThickness = 4
 macrosScroll.Parent = macrosTabFrame
 
--- Use UIListLayout with reverse order so new creations stack at the top if desired, or standard layout with manual sorting
 local macrosLayout = Instance.new("UIListLayout")
 macrosLayout.SortOrder = Enum.SortOrder.LayoutOrder
 macrosLayout.Padding = UDim.new(0, 10)
 macrosLayout.Parent = macrosScroll
 
--- Floating "+" button that ignores scroll (parented directly to the tab frame)
+-- Floating "+" button that ignores scroll
 local addMacroBtn = Instance.new("TextButton")
 addMacroBtn.Size = UDim2.new(0, 45, 0, 45)
 addMacroBtn.Position = UDim2.new(1, -60, 1, -60)
@@ -780,17 +778,18 @@ local function renderMacroCard(macroData, index)
 	cardCorner.CornerRadius = UDim.new(0, 6)
 	cardCorner.Parent = card
 
-	-- Top colored header strip
+	-- Top colored header strip with fully rounded top corners matching the card
 	local headerStrip = Instance.new("Frame")
-	headerStrip.Size = UDim2.new(1, 0, 0, 22)
+	headerStrip.Size = UDim2.new(1, 0, 0, 26)
 	headerStrip.BackgroundColor3 = Theme.MacroHeaderColor3
 	headerStrip.BorderSizePixel = 0
 	headerStrip.Parent = card
 
 	local stripCorner = Instance.new("UICorner")
 	stripCorner.CornerRadius = UDim.new(0, 6)
-	headerStrip.Parent = card
-	-- Fix bottom corners of header strip to stay square
+	stripCorner.Parent = headerStrip
+
+	-- Clip bottom corners of the header strip so only the top is rounded
 	local stripCover = Instance.new("Frame")
 	stripCover.Size = UDim2.new(1, 0, 0, 6)
 	stripCover.Position = UDim2.new(0, 0, 1, -6)
@@ -805,6 +804,7 @@ local function renderMacroCard(macroData, index)
 	toggleBg.BackgroundColor3 = macroData.enabled and Color3.fromRGB(46, 204, 113) or Color3.fromRGB(231, 76, 60)
 	toggleBg.BorderSizePixel = 0
 	toggleBg.Text = ""
+	toggleBg.ZIndex = 2
 	toggleBg.Parent = headerStrip
 
 	local toggleBgCorner = Instance.new("UICorner")
@@ -816,6 +816,7 @@ local function renderMacroCard(macroData, index)
 	toggleBall.Position = macroData.enabled and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
 	toggleBall.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	toggleBall.BorderSizePixel = 0
+	toggleBall.ZIndex = 3
 	toggleBall.Parent = toggleBg
 
 	local ballCorner = Instance.new("UICorner")
@@ -837,7 +838,7 @@ local function renderMacroCard(macroData, index)
 	-- Macro Name Label
 	local nameLabel = Instance.new("TextLabel")
 	nameLabel.Size = UDim2.new(1, -20, 0, 22)
-	nameLabel.Position = UDim2.new(0, 12, 0, 26)
+	nameLabel.Position = UDim2.new(0, 12, 0, 28)
 	nameLabel.BackgroundTransparency = 1
 	nameLabel.Font = Enum.Font.GothamBold
 	nameLabel.Text = macroData.name
@@ -849,7 +850,7 @@ local function renderMacroCard(macroData, index)
 	-- Creation Date Label (Format: YYYY-MM-DD HH:MM)
 	local dateLabel = Instance.new("TextLabel")
 	dateLabel.Size = UDim2.new(1, -20, 0, 16)
-	dateLabel.Position = UDim2.new(0, 12, 0, 48)
+	dateLabel.Position = UDim2.new(0, 12, 0, 50)
 	dateLabel.BackgroundTransparency = 1
 	dateLabel.Font = Enum.Font.Gotham
 	dateLabel.Text = macroData.created
@@ -858,7 +859,7 @@ local function renderMacroCard(macroData, index)
 	dateLabel.TextXAlignment = Enum.TextXAlignment.Left
 	dateLabel.Parent = card
 
-	-- Settings / Configure Button gear icon
+	-- Settings gear button
 	local gearBtn = Instance.new("TextButton")
 	gearBtn.Size = UDim2.new(0, 24, 0, 24)
 	gearBtn.Position = UDim2.new(1, -32, 1, -28)
@@ -879,7 +880,7 @@ for i, macro in ipairs(savedMacros) do
 	renderMacroCard(macro, i)
 end
 
--- Macro Creation Popup Modal (Matches user design spec: centered box ignoring scroll, placed above everything)
+-- Macro Creation Popup Modal with rounded header matching the modal box corners
 local function openCreationPopup()
 	local overlay = Instance.new("TextButton")
 	overlay.Size = UDim2.new(1, 0, 1, 0)
@@ -903,7 +904,7 @@ local function openCreationPopup()
 	modalCorner.Parent = modalBox
 
 	local modalHeader = Instance.new("Frame")
-	modalHeader.Size = UDim2.new(1, 0, 0, 30)
+	modalHeader.Size = UDim2.new(1, 0, 0, 34)
 	modalHeader.BackgroundColor3 = Theme.MacroHeaderColor3
 	modalHeader.BorderSizePixel = 0
 	modalHeader.ZIndex = 11
@@ -911,10 +912,19 @@ local function openCreationPopup()
 
 	local modalHeaderCorner = Instance.new("UICorner")
 	modalHeaderCorner.CornerRadius = UDim.new(0, 8)
-	modalHeader.Parent = modalBox
+	modalHeader.Parent = modalHeader
+
+	-- Clip bottom corners of the creation modal header so only top is rounded
+	local modalHeaderCover = Instance.new("Frame")
+	modalHeaderCover.Size = UDim2.new(1, 0, 0, 8)
+	modalHeaderCover.Position = UDim2.new(0, 0, 1, -8)
+	modalHeaderCover.BackgroundColor3 = Theme.MacroHeaderColor3
+	modalHeaderCover.BorderSizePixel = 0
+	modalHeaderCover.ZIndex = 11
+	modalHeaderCover.Parent = modalHeader
 
 	local closeBtn = Instance.new("TextButton")
-	closeBtn.Size = UDim2.new(0, 30, 0, 30)
+	closeBtn.Size = UDim2.new(0, 34, 0, 34)
 	closeBtn.BackgroundTransparency = 1
 	closeBtn.Font = Enum.Font.GothamBold
 	closeBtn.Text = "✕"
@@ -929,7 +939,7 @@ local function openCreationPopup()
 
 	local nameInput = Instance.new("TextBox")
 	nameInput.Size = UDim2.new(1, -24, 0, 36)
-	nameInput.Position = UDim2.new(0, 12, 0, 45)
+	nameInput.Position = UDim2.new(0, 12, 0, 48)
 	nameInput.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 	nameInput.BorderSizePixel = 0
 	nameInput.Font = Enum.Font.GothamBold
@@ -967,10 +977,9 @@ local function openCreationPopup()
 			blocks = {}
 		}
 		
-		table.insert(savedMacros, 1, newMacro) -- Insert at top
+		table.insert(savedMacros, 1, newMacro)
 		saveMacros()
 		
-		-- Refresh UI list quickly
 		for _, child in ipairs(macrosScroll:GetChildren()) do
 			if child:IsA("Frame") then child:Destroy() end
 		end
