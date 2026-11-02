@@ -374,8 +374,10 @@ local function appendLog(msg, msgType)
 	lbl.TextSize = 11
 	lbl.TextXAlignment = Enum.TextXAlignment.Left
 	lbl.TextWrapped = true
-	lbl.Text = msg
-	
+
+	local timestamp = os.date("%H:%M:%S")
+	lbl.Text = string.format("[%s] -- %s", timestamp, tostring(msg))
+
 	if msgType == Enum.MessageType.MessageWarning then
 		lbl.TextColor3 = Color3.fromRGB(241, 196, 15)
 	elseif msgType == Enum.MessageType.MessageError then
