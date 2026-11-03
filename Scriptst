@@ -729,9 +729,10 @@ local function saveMacros()
 	end
 end
 
+-- Scrollable container for macros list
 local macrosScroll = Instance.new("ScrollingFrame")
-macrosScroll.Size = UDim2.new(1, -30, 1, -30)
-macrosScroll.Position = UDim2.new(0, 15, 0, 15)
+macrosScroll.Size = UDim2.new(1, -20, 1, -20)
+macrosScroll.Position = UDim2.new(0, 10, 0, 10)
 macrosScroll.BackgroundTransparency = 1
 macrosScroll.BorderSizePixel = 0
 macrosScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -762,7 +763,8 @@ addCorner.Parent = addMacroBtn
 
 local function renderMacroCard(macroData, index)
 	local card = Instance.new("Frame")
-	card.Size = UDim2.new(1, 0, 0, 75)
+	-- Width uses scale 1 to adapt to any GUI size, with -12 offset to clear the scrollbar safely
+	card.Size = UDim2.new(1, -12, 0, 75)
 	card.BackgroundColor3 = Theme.CardColor3
 	card.BorderSizePixel = 0
 	card.ClipsDescendants = true
@@ -773,7 +775,6 @@ local function renderMacroCard(macroData, index)
 	cardCorner.CornerRadius = UDim.new(0, 6)
 	cardCorner.Parent = card
 
-	-- Header strip with rounded top corners and flat bottom
 	local headerStrip = Instance.new("Frame")
 	headerStrip.Size = UDim2.new(1, 0, 0, 22)
 	headerStrip.BackgroundColor3 = Theme.MacroHeaderColor3
@@ -785,8 +786,8 @@ local function renderMacroCard(macroData, index)
 	stripCorner.Parent = headerStrip
 
 	local stripCover = Instance.new("Frame")
-	stripCover.Size = UDim2.new(1, 0, 0, 6)
-	stripCover.Position = UDim2.new(0, 0, 1, -6)
+	stripCover.Size = UDim2.new(1, 0, 0, 8)
+	stripCover.Position = UDim2.new(0, 0, 1, -8)
 	stripCover.BackgroundColor3 = Theme.MacroHeaderColor3
 	stripCover.BorderSizePixel = 0
 	stripCover.Parent = headerStrip
