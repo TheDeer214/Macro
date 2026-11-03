@@ -703,12 +703,10 @@ local TweenService = game:GetService("TweenService")
 local macrosTabFrame = tabFrames["MACROS"]
 local macroFileName = "macrostruct_macros.json"
 
--- Theme configuration for the macro header accent
 Theme.MacroHeaderColor3 = Color3.fromRGB(52, 152, 219)
 
 local savedMacros = {}
 
--- 1. Load existing macros from file
 local function loadMacros()
 	if pcall(function() return isfile and isfile(macroFileName) end) and isfile(macroFileName) then
 		local success, decoded = pcall(function()
@@ -722,7 +720,6 @@ end
 
 loadMacros()
 
--- 2. Save macros to file
 local function saveMacros()
 	local success, encoded = pcall(function()
 		return HttpService:JSONEncode(savedMacros)
@@ -732,7 +729,6 @@ local function saveMacros()
 	end
 end
 
--- Scrollable container for macros list
 local macrosScroll = Instance.new("ScrollingFrame")
 macrosScroll.Size = UDim2.new(1, -30, 1, -30)
 macrosScroll.Position = UDim2.new(0, 15, 0, 15)
@@ -748,7 +744,6 @@ macrosLayout.SortOrder = Enum.SortOrder.LayoutOrder
 macrosLayout.Padding = UDim.new(0, 10)
 macrosLayout.Parent = macrosScroll
 
--- Floating "+" button that ignores scroll (parented directly to the tab frame)
 local addMacroBtn = Instance.new("TextButton")
 addMacroBtn.Size = UDim2.new(0, 45, 0, 45)
 addMacroBtn.Position = UDim2.new(1, -60, 1, -60)
@@ -765,13 +760,12 @@ local addCorner = Instance.new("UICorner")
 addCorner.CornerRadius = UDim.new(1, 0)
 addCorner.Parent = addMacroBtn
 
--- Function to render a macro card in the scroll list
 local function renderMacroCard(macroData, index)
 	local card = Instance.new("Frame")
 	card.Size = UDim2.new(1, 0, 0, 75)
 	card.BackgroundColor3 = Theme.CardColor3
 	card.BorderSizePixel = 0
-	card.ClipsDescendants = true -- Clips top corners smoothly while keeping bottom straight
+	card.ClipsDescendants = true
 	card.LayoutOrder = index
 	card.Parent = macrosScroll
 
@@ -779,14 +773,24 @@ local function renderMacroCard(macroData, index)
 	cardCorner.CornerRadius = UDim.new(0, 6)
 	cardCorner.Parent = card
 
-	-- Top colored header strip (Connected flush to the card body)
+	-- Header strip with rounded top corners and flat bottom
 	local headerStrip = Instance.new("Frame")
 	headerStrip.Size = UDim2.new(1, 0, 0, 22)
 	headerStrip.BackgroundColor3 = Theme.MacroHeaderColor3
 	headerStrip.BorderSizePixel = 0
 	headerStrip.Parent = card
 
-	-- Animated Toggle Switch inside the header
+	local stripCorner = Instance.new("UICorner")
+	stripCorner.CornerRadius = UDim.new(0, 6)
+	stripCorner.Parent = headerStrip
+
+	local stripCover = Instance.new("Frame")
+	stripCover.Size = UDim2.new(1, 0, 0, 6)
+	stripCover.Position = UDim2.new(0, 0, 1, -6)
+	stripCover.BackgroundColor3 = Theme.MacroHeaderColor3
+	stripCover.BorderSizePixel = 0
+	stripCover.Parent = headerStrip
+
 	local toggleBg = Instance.new("TextButton")
 	toggleBg.Size = UDim2.new(0, 36, 0, 16)
 	toggleBg.Position = UDim2.new(1, -44, 0.5, -8)
@@ -822,7 +826,6 @@ local function renderMacroCard(macroData, index)
 		saveMacros()
 	end)
 
-	-- Macro Name Label
 	local nameLabel = Instance.new("TextLabel")
 	nameLabel.Size = UDim2.new(1, -20, 0, 22)
 	nameLabel.Position = UDim2.new(0, 12, 0, 26)
@@ -834,7 +837,6 @@ local function renderMacroCard(macroData, index)
 	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
 	nameLabel.Parent = card
 
-	-- Creation Date Label (Format: YYYY-MM-DD HH:MM)
 	local dateLabel = Instance.new("TextLabel")
 	dateLabel.Size = UDim2.new(1, -20, 0, 16)
 	dateLabel.Position = UDim2.new(0, 12, 0, 48)
@@ -846,7 +848,6 @@ local function renderMacroCard(macroData, index)
 	dateLabel.TextXAlignment = Enum.TextXAlignment.Left
 	dateLabel.Parent = card
 
-	-- Settings gear button
 	local gearBtn = Instance.new("TextButton")
 	gearBtn.Size = UDim2.new(0, 24, 0, 24)
 	gearBtn.Position = UDim2.new(1, -32, 1, -28)
@@ -862,12 +863,10 @@ local function renderMacroCard(macroData, index)
 	end)
 end
 
--- Load existing saved macros into view
 for i, macro in ipairs(savedMacros) do
 	renderMacroCard(macro, i)
 end
 
--- Macro Creation Popup Modal
 local function openCreationPopup()
 	local overlay = Instance.new("TextButton")
 	overlay.Size = UDim2.new(1, 0, 1, 0)
@@ -883,7 +882,7 @@ local function openCreationPopup()
 	modalBox.Position = UDim2.new(0.5, -160, 0.5, -80)
 	modalBox.BackgroundColor3 = Theme.CardColor3
 	modalBox.BorderSizePixel = 0
-	modalBox.ClipsDescendants = true -- Clips top corners smoothly while keeping bottom straight
+	modalBox.ClipsDescendants = true
 	modalBox.ZIndex = 11
 	modalBox.Parent = overlay
 
@@ -897,6 +896,18 @@ local function openCreationPopup()
 	modalHeader.BorderSizePixel = 0
 	modalHeader.ZIndex = 11
 	modalHeader.Parent = modalBox
+
+	local modalHeaderCorner = Instance.new("UICorner")
+	modalHeaderCorner.CornerRadius = UDim.new(0, 8)
+	modalHeaderCorner.Parent = modalHeader
+
+	local modalHeaderCover = Instance.new("Frame")
+	modalHeaderCover.Size = UDim2.new(1, 0, 0, 8)
+	modalHeaderCover.Position = UDim2.new(0, 0, 1, -8)
+	modalHeaderCover.BackgroundColor3 = Theme.MacroHeaderColor3
+	modalHeaderCover.BorderSizePixel = 0
+	modalHeaderCover.ZIndex = 11
+	modalHeaderCover.Parent = modalHeader
 
 	local closeBtn = Instance.new("TextButton")
 	closeBtn.Size = UDim2.new(0, 30, 0, 30)
