@@ -981,156 +981,126 @@ end
 addMacroBtn.Activated:Connect(openCreationPopup)
 
 -- 🟥⭕‼️ MACRO STUFF ‼️⭕🟥
-local TweenService = game:GetService("TweenService")
 
--- Parent frame where the configuration workspace will load (e.g., swapping out the main macros view or opening a full panel)
-local parentContainer = tabFrames["MACROS"] 
+local function openMacroWorkspace(macroData)
+	-- Full-screen immersive workspace container over the macros tab
+	local workspaceFrame = Instance.new("Frame")
+	workspaceFrame.Size = UDim2.new(1, 0, 1, 0)
+	workspaceFrame.BackgroundColor3 = Theme.BackgroundColor3 or Color3.fromRGB(20, 20, 25)
+	workspaceFrame.BorderSizePixel = 0
+	workspaceFrame.ZIndex = 20
+	workspaceFrame.Parent = macrosTabFrame
 
-local function openMacroConfigWorkspace(macroData)
-	-- 1. Full Workspace Overlay Container
-	local configView = Instance.new("Frame")
-	configView.Size = UDim2.new(1, 0, 1, 0)
-	configView.Position = UDim2.new(0, 0, 0, 0)
-	configView.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-	configView.BorderSizePixel = 0
-	configView.ZIndex = 20
-	configView.Parent = parentContainer
-
-	-- Top Header Bar with Back Button
-	local topBar = Instance.new("Frame")
-	topBar.Size = UDim2.new(1, 0, 0, 40)
-	topBar.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
-	topBar.BorderSizePixel = 0
-	topBar.ZIndex = 21
-	topBar.Parent = configView
+	-- Top Header bar with the macro's name and a Back button
+	local topHeader = Instance.new("Frame")
+	topHeader.Size = UDim2.new(1, 0, 0, 45)
+	topHeader.BackgroundColor3 = Theme.CardColor3 or Color3.fromRGB(35, 35, 40)
+	topHeader.BorderSizePixel = 0
+	topHeader.ZIndex = 21
+	topHeader.Parent = workspaceFrame
 
 	local backBtn = Instance.new("TextButton")
 	backBtn.Size = UDim2.new(0, 40, 0, 40)
+	backBtn.Position = UDim2.new(0, 5, 0.5, -20)
 	backBtn.BackgroundTransparency = 1
 	backBtn.Font = Enum.Font.GothamBold
 	backBtn.Text = "←"
 	backBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	backBtn.TextSize = 18
+	backBtn.TextSize = 20
 	backBtn.ZIndex = 22
-	backBtn.Parent = topBar
+	backBtn.Parent = topHeader
+
+	backBtn.Activated:Connect(function()
+		workspaceFrame:Destroy()
+	end)
 
 	local titleLabel = Instance.new("TextLabel")
-	titleLabel.Size = UDim2.new(1, -100, 1, 0)
+	titleLabel.Size = UDim2.new(1, -60, 1, 0)
 	titleLabel.Position = UDim2.new(0, 50, 0, 0)
 	titleLabel.BackgroundTransparency = 1
 	titleLabel.Font = Enum.Font.GothamBold
-	titleLabel.Text = macroData.name or "Configure Macro"
+	titleLabel.Text = "Editing: " .. macroData.name
 	titleLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
-	titleLabel.TextSize = 14
+	titleLabel.TextSize = 15
 	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 	titleLabel.ZIndex = 22
-	titleLabel.Parent = topBar
+	titleLabel.Parent = topHeader
 
-	backBtn.Activated:Connect(function()
-		configView:Destroy()
-	end)
+	-- Main Scrollable Content Area for the 3 Pillars
+	local contentScroll = Instance.new("ScrollingFrame")
+	contentScroll.Size = UDim2.new(1, -20, 1, -55)
+	contentScroll.Position = UDim2.new(0, 10, 0, 50)
+	contentScroll.BackgroundTransparency = 1
+	contentScroll.BorderSizePixel = 0
+	contentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+	contentScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	contentScroll.ScrollBarThickness = 4
+	contentScroll.ZIndex = 21
+	contentScroll.Parent = workspaceFrame
 
-	-- Scrollable Body for the Sections
-	local scroll = Instance.new("ScrollingFrame")
-	scroll.Size = UDim2.new(1, -20, 1, -55)
-	scroll.Position = UDim2.new(0, 10, 0, 45)
-	scroll.BackgroundTransparency = 1
-	scroll.BorderSizePixel = 0
-	scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-	scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	scroll.ScrollBarThickness = 4
-	scroll.ZIndex = 21
-	scroll.Parent = configView
-
-	local layout = Instance.new("UIListLayout")
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Padding = UDim.new(0, 12)
-	layout.Parent = scroll
+	local contentLayout = Instance.new("UIListLayout")
+	contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	contentLayout.Padding = UDim.new(0, 12)
+	contentLayout.Parent = contentScroll
 
 	-- Helper function to create section cards (Triggers, Scripts, Variables)
-	local function createSectionCard(titleText, accentColor, itemCount)
-		local card = Instance.new("Frame")
-		card.Size = UDim2.new(1, -12, 0, 45)
-		card.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
-		card.BorderSizePixel = 0
-		card.ClipsDescendants = true
-		card.ZIndex = 22
-		card.Parent = scroll
+	local function createSectionCard(titleText, accentColor, layoutOrder)
+		local sectionCard = Instance.new("Frame")
+		sectionCard.Size = UDim2.new(1, -12, 0, 120) -- Will auto-adjust or scale with contents
+		sectionCard.BackgroundColor3 = Theme.CardColor3 or Color3.fromRGB(30, 30, 35)
+		sectionCard.BorderSizePixel = 0
+		sectionCard.ClipsDescendants = true
+		sectionCard.LayoutOrder = layoutOrder
+		sectionCard.ZIndex = 22
+		sectionCard.Parent = contentScroll
 
-		local corner = Instance.new("UICorner")
-		corner.CornerRadius = UDim.new(0, 6)
-		corner.Parent = card
+		local cardCorner = Instance.new("UICorner")
+		cardCorner.CornerRadius = UDim.new(0, 6)
+		cardCorner.Parent = sectionCard
 
-		-- Colored Header Strip (Rounded top, flat bottom)
+		-- Section Header Strip (rounded top, flat bottom)
 		local header = Instance.new("Frame")
-		header.Size = UDim2.new(1, 0, 0, 42)
+		header.Size = UDim2.new(1, 0, 0, 28)
 		header.BackgroundColor3 = accentColor
 		header.BorderSizePixel = 0
 		header.ZIndex = 23
-		header.Parent = card
+		header.Parent = sectionCard
 
 		local headerCorner = Instance.new("UICorner")
 		headerCorner.CornerRadius = UDim.new(0, 6)
-		header.Parent = card
+		headerCorner.Parent = header
 
 		local headerCover = Instance.new("Frame")
-		headerCover.Size = UDim2.new(1, 0, 0, 8)
-		headerCover.Position = UDim2.new(0, 0, 1, -8)
+		headerCover.Size = UDim2.new(1, 0, 0, 6)
+		headerCover.Position = UDim2.new(0, 0, 1, -6)
 		headerCover.BackgroundColor3 = accentColor
 		headerCover.BorderSizePixel = 0
 		headerCover.ZIndex = 23
 		headerCover.Parent = header
 
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -100, 1, 0)
-		label.Position = UDim2.new(0, 12, 0, 0)
-		label.BackgroundTransparency = 1
-		label.Font = Enum.Font.GothamBold
-		label.Text = titleText .. "  (" .. itemCount .. ")"
-		label.TextColor3 = Color3.fromRGB(255, 255, 255)
-		label.TextSize = 13
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.ZIndex = 24
-		label.Parent = header
+		local headerTitle = Instance.new("TextLabel")
+		headerTitle.Size = UDim2.new(1, -15, 1, 0)
+		headerTitle.Position = UDim2.new(0, 10, 0, 0)
+		headerTitle.BackgroundTransparency = 1
+		headerTitle.Font = Enum.Font.GothamBold
+		headerTitle.Text = titleText
+		headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+		headerTitle.TextSize = 12
+		headerTitle.TextXAlignment = Enum.TextXAlignment.Left
+		headerTitle.ZIndex = 24
+		headerTitle.Parent = header
 
-		-- Add ("+") Button in Header
-		local addBtn = Instance.new("TextButton")
-		addBtn.Size = UDim2.new(0, 30, 0, 30)
-		addBtn.Position = UDim2.new(1, -36, 0.5, -15)
-		addBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-		addBtn.BackgroundTransparency = 0.3
-		addBtn.BorderSizePixel = 0
-		addBtn.Font = Enum.Font.GothamBold
-		addBtn.Text = "+"
-		addBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		addBtn.TextSize = 14
-		addBtn.ZIndex = 24
-		addBtn.Parent = header
-
-		local addBtnCorner = Instance.new("UICorner")
-		addBtnCorner.CornerRadius = UDim.new(1, 0)
-		addBtnCorner.Parent = addBtn
-
-		return card, header
+		return sectionCard
 	end
 
-	-- 1. Conditions Section (Red Theme)[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)
-	local condCount = macroData.conditions and #macroData.conditions or 0
-	local condCard = createSectionCard("Conditions", Color3.fromRGB(192, 57, 43), condCount)
+	-- 1. Conditions Section (Red Accent)
+	createSectionCard("Conditions (Triggers)", Color3.fromRGB(231, 76, 60), 1)
 
-	-- 2. Scripts Section (Blue Theme - supports nested blocks like If/EndIf)[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)
-	local scriptCount = macroData.scripts and #macroData.scripts or 0
-	local scriptCard, scriptHeader = createSectionCard("Scripts", Color3.fromRGB(41, 128, 185), scriptCount)
+	-- 2. Scripts Section (Blue Accent - Action/Constraint combined flow)
+	createSectionCard("Scripts & Actions Flow", Color3.fromRGB(52, 152, 219), 2)
 
-	-- Example items container inside the Scripts section
-	local scriptContentLayout = Instance.new("UIListLayout")
-	scriptContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	scriptContentLayout.Padding = UDim.new(0, 6)
-	scriptContentLayout.Parent = scriptCard
-
-	-- 3. Local Variables Section (Teal Theme)[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)
-	local varCount = macroData.variables and #macroData.variables or 0
-	createSectionCard("Local Variables", Color3.fromRGB(22, 160, 133), varCount)
+	-- 3. Local Variables Section (Teal Accent)
+	createSectionCard("Local Variables", Color3.fromRGB(26, 188, 156), 3)
 end
 
 -- ‼️⭕ Core Macro executor ⭕‼️
