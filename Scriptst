@@ -771,6 +771,24 @@ local function renderMacroCard(macroData, index)
 	card.LayoutOrder = index
 	card.Parent = macrosScroll
 
+	local mainCardClick = Instance.new("TextButton")
+	mainCardClick.Size = UDim2.new(1, -40, 1, 0) -- Leave space for the gear button on the right
+	mainCardClick.BackgroundTransparency = 1
+	mainCardClick.Text = ""
+	mainCardClick.ZIndex = 3
+	mainCardClick.Parent = card
+
+	mainCardClick.Activated:Connect(function()
+		openMacroWorkspace(macroData)
+	end)
+
+	-- Gear button for options (delete, copy, etc.)
+	gearBtn.Activated:Connect(function()
+		print("Opening management dropdown for: " .. macroData.name)
+		-- Add your delete/copy dropdown logic here later!
+	end)
+
+
 	local cardCorner = Instance.new("UICorner")
 	cardCorner.CornerRadius = UDim.new(0, 6)
 	cardCorner.Parent = card
