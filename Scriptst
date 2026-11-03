@@ -771,7 +771,7 @@ local function renderMacroCard(macroData, index)
 	card.Size = UDim2.new(1, 0, 0, 75)
 	card.BackgroundColor3 = Theme.CardColor3
 	card.BorderSizePixel = 0
-	card.ClipsDescendants = true
+	card.ClipsDescendants = true -- Clips top corners smoothly while keeping bottom straight
 	card.LayoutOrder = index
 	card.Parent = macrosScroll
 
@@ -779,16 +779,12 @@ local function renderMacroCard(macroData, index)
 	cardCorner.CornerRadius = UDim.new(0, 6)
 	cardCorner.Parent = card
 
-	-- Top colored header strip with rounded corners
+	-- Top colored header strip (Connected flush to the card body)
 	local headerStrip = Instance.new("Frame")
 	headerStrip.Size = UDim2.new(1, 0, 0, 22)
 	headerStrip.BackgroundColor3 = Theme.MacroHeaderColor3
 	headerStrip.BorderSizePixel = 0
 	headerStrip.Parent = card
-
-	local stripCorner = Instance.new("UICorner")
-	stripCorner.CornerRadius = UDim.new(0, 6)
-	stripCorner.Parent = headerStrip
 
 	-- Animated Toggle Switch inside the header
 	local toggleBg = Instance.new("TextButton")
@@ -887,7 +883,7 @@ local function openCreationPopup()
 	modalBox.Position = UDim2.new(0.5, -160, 0.5, -80)
 	modalBox.BackgroundColor3 = Theme.CardColor3
 	modalBox.BorderSizePixel = 0
-	modalBox.ClipsDescendants = true
+	modalBox.ClipsDescendants = true -- Clips top corners smoothly while keeping bottom straight
 	modalBox.ZIndex = 11
 	modalBox.Parent = overlay
 
@@ -901,10 +897,6 @@ local function openCreationPopup()
 	modalHeader.BorderSizePixel = 0
 	modalHeader.ZIndex = 11
 	modalHeader.Parent = modalBox
-
-	local modalHeaderCorner = Instance.new("UICorner")
-	modalHeaderCorner.CornerRadius = UDim.new(0, 8)
-	modalHeaderCorner.Parent = modalHeader
 
 	local closeBtn = Instance.new("TextButton")
 	closeBtn.Size = UDim2.new(0, 30, 0, 30)
