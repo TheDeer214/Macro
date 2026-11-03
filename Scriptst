@@ -697,6 +697,7 @@ toggleButton.Activated:Connect(function()
 end)
 
 -- ⭕ Base Macro setup ⭕
+-- Macrostruct: Macros Tab & Workspace Setup
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 
@@ -745,6 +746,7 @@ macrosLayout.SortOrder = Enum.SortOrder.LayoutOrder
 macrosLayout.Padding = UDim.new(0, 10)
 macrosLayout.Parent = macrosScroll
 
+-- Floating "+" button
 local addMacroBtn = Instance.new("TextButton")
 addMacroBtn.Size = UDim2.new(0, 45, 0, 45)
 addMacroBtn.Position = UDim2.new(1, -60, 1, -60)
@@ -761,9 +763,121 @@ local addCorner = Instance.new("UICorner")
 addCorner.CornerRadius = UDim.new(1, 0)
 addCorner.Parent = addMacroBtn
 
+-- 1. Macro Configuration Workspace (Defined first so cards can call it)
+local function openMacroWorkspace(macroData)
+	local workspaceFrame = Instance.new("Frame")
+	workspaceFrame.Size = UDim2.new(1, 0, 1, 0)
+	workspaceFrame.BackgroundColor3 = Theme.BackgroundColor3 or Color3.fromRGB(20, 20, 25)
+	workspaceFrame.BorderSizePixel = 0
+	workspaceFrame.ZIndex = 20
+	workspaceFrame.Parent = macrosTabFrame
+
+	local topHeader = Instance.new("Frame")
+	topHeader.Size = UDim2.new(1, 0, 0, 45)
+	topHeader.BackgroundColor3 = Theme.CardColor3 or Color3.fromRGB(35, 35, 40)
+	topHeader.BorderSizePixel = 0
+	topHeader.ZIndex = 21
+	topHeader.Parent = workspaceFrame
+
+	local backBtn = Instance.new("TextButton")
+	backBtn.Size = UDim2.new(0, 40, 0, 40)
+	backBtn.Position = UDim2.new(0, 5, 0.5, -20)
+	backBtn.BackgroundTransparency = 1
+	backBtn.Font = Enum.Font.GothamBold
+	backBtn.Text = "←"
+	backBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	backBtn.TextSize = 20
+	backBtn.ZIndex = 22
+	backBtn.Parent = topHeader
+
+	backBtn.Activated:Connect(function()
+		workspaceFrame:Destroy()
+	end)
+
+	local titleLabel = Instance.new("TextLabel")
+	titleLabel.Size = UDim2.new(1, -60, 1, 0)
+	titleLabel.Position = UDim2.new(0, 50, 0, 0)
+	titleLabel.BackgroundTransparency = 1
+	titleLabel.Font = Enum.Font.GothamBold
+	titleLabel.Text = "Editing: " .. macroData.name
+	titleLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+	titleLabel.TextSize = 15
+	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	titleLabel.ZIndex = 22
+	titleLabel.Parent = topHeader
+
+	local contentScroll = Instance.new("ScrollingFrame")
+	contentScroll.Size = UDim2.new(1, -20, 1, -55)
+	contentScroll.Position = UDim2.new(0, 10, 0, 50)
+	contentScroll.BackgroundTransparency = 1
+	contentScroll.BorderSizePixel = 0
+	contentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+	contentScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	contentScroll.ScrollBarThickness = 4
+	contentScroll.ZIndex = 21
+	contentScroll.Parent = workspaceFrame
+
+	local contentLayout = Instance.new("UIListLayout")
+	contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	contentLayout.Padding = UDim.new(0, 12)
+	contentLayout.Parent = contentScroll
+
+	local function createSectionCard(titleText, accentColor, layoutOrder)
+		local sectionCard = Instance.new("Frame")
+		sectionCard.Size = UDim2.new(1, -12, 0, 120)
+		sectionCard.BackgroundColor3 = Theme.CardColor3 or Color3.fromRGB(30, 30, 35)
+		sectionCard.BorderSizePixel = 0
+		sectionCard.ClipsDescendants = true
+		sectionCard.LayoutOrder = layoutOrder
+		sectionCard.ZIndex = 22
+		sectionCard.Parent = contentScroll
+
+		local cardCorner = Instance.new("UICorner")
+		cardCorner.CornerRadius = UDim.new(0, 6)
+		cardCorner.Parent = sectionCard
+
+		local header = Instance.new("Frame")
+		header.Size = UDim2.new(1, 0, 0, 28)
+		header.BackgroundColor3 = accentColor
+		header.BorderSizePixel = 0
+		header.ZIndex = 23
+		header.Parent = sectionCard
+
+		local headerCorner = Instance.new("UICorner")
+		headerCorner.CornerRadius = UDim.new(0, 6)
+		headerCorner.Parent = header
+
+		local headerCover = Instance.new("Frame")
+		headerCover.Size = UDim2.new(1, 0, 0, 6)
+		headerCover.Position = UDim2.new(0, 0, 1, -6)
+		headerCover.BackgroundColor3 = accentColor
+		headerCover.BorderSizePixel = 0
+		headerCover.ZIndex = 23
+		headerCover.Parent = header
+
+		local headerTitle = Instance.new("TextLabel")
+		headerTitle.Size = UDim2.new(1, -15, 1, 0)
+		headerTitle.Position = UDim2.new(0, 10, 0, 0)
+		headerTitle.BackgroundTransparency = 1
+		headerTitle.Font = Enum.Font.GothamBold
+		headerTitle.Text = titleText
+		headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+		headerTitle.TextSize = 12
+		headerTitle.TextXAlignment = Enum.TextXAlignment.Left
+		headerTitle.ZIndex = 24
+		headerTitle.Parent = header
+
+		return sectionCard
+	end
+
+	createSectionCard("Conditions (Triggers)", Color3.fromRGB(231, 76, 60), 1)
+	createSectionCard("Scripts & Actions Flow", Color3.fromRGB(52, 152, 219), 2)
+	createSectionCard("Local Variables", Color3.fromRGB(26, 188, 156), 3)
+end
+
+-- 2. Render individual macro card function
 local function renderMacroCard(macroData, index)
 	local card = Instance.new("Frame")
-	-- Width uses scale 1 to adapt to any GUI size, with -12 offset to clear the scrollbar safely
 	card.Size = UDim2.new(1, -12, 0, 75)
 	card.BackgroundColor3 = Theme.CardColor3
 	card.BorderSizePixel = 0
@@ -771,8 +885,13 @@ local function renderMacroCard(macroData, index)
 	card.LayoutOrder = index
 	card.Parent = macrosScroll
 
+	local cardCorner = Instance.new("UICorner")
+	cardCorner.CornerRadius = UDim.new(0, 6)
+	cardCorner.Parent = card
+
+	-- Clicking the card body opens the workspace
 	local mainCardClick = Instance.new("TextButton")
-	mainCardClick.Size = UDim2.new(1, -40, 1, 0) -- Leave space for the gear button on the right
+	mainCardClick.Size = UDim2.new(1, -40, 1, 0)
 	mainCardClick.BackgroundTransparency = 1
 	mainCardClick.Text = ""
 	mainCardClick.ZIndex = 3
@@ -781,17 +900,6 @@ local function renderMacroCard(macroData, index)
 	mainCardClick.Activated:Connect(function()
 		openMacroWorkspace(macroData)
 	end)
-
-	-- Gear button for options (delete, copy, etc.)
-	gearBtn.Activated:Connect(function()
-		print("Opening management dropdown for: " .. macroData.name)
-		-- Add your delete/copy dropdown logic here later!
-	end)
-
-
-	local cardCorner = Instance.new("UICorner")
-	cardCorner.CornerRadius = UDim.new(0, 6)
-	cardCorner.Parent = card
 
 	local headerStrip = Instance.new("Frame")
 	headerStrip.Size = UDim2.new(1, 0, 0, 22)
@@ -810,12 +918,14 @@ local function renderMacroCard(macroData, index)
 	stripCover.BorderSizePixel = 0
 	stripCover.Parent = headerStrip
 
+	-- Toggle Switch
 	local toggleBg = Instance.new("TextButton")
 	toggleBg.Size = UDim2.new(0, 36, 0, 16)
 	toggleBg.Position = UDim2.new(1, -44, 0.5, -8)
 	toggleBg.BackgroundColor3 = macroData.enabled and Color3.fromRGB(46, 204, 113) or Color3.fromRGB(231, 76, 60)
 	toggleBg.BorderSizePixel = 0
 	toggleBg.Text = ""
+	toggleBg.ZIndex = 4
 	toggleBg.Parent = headerStrip
 
 	local toggleBgCorner = Instance.new("UICorner")
@@ -827,6 +937,7 @@ local function renderMacroCard(macroData, index)
 	toggleBall.Position = macroData.enabled and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
 	toggleBall.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	toggleBall.BorderSizePixel = 0
+	toggleBall.ZIndex = 4
 	toggleBall.Parent = toggleBg
 
 	local ballCorner = Instance.new("UICorner")
@@ -867,6 +978,7 @@ local function renderMacroCard(macroData, index)
 	dateLabel.TextXAlignment = Enum.TextXAlignment.Left
 	dateLabel.Parent = card
 
+	-- Gear button
 	local gearBtn = Instance.new("TextButton")
 	gearBtn.Size = UDim2.new(0, 24, 0, 24)
 	gearBtn.Position = UDim2.new(1, -32, 1, -28)
@@ -875,17 +987,20 @@ local function renderMacroCard(macroData, index)
 	gearBtn.Text = "⚙"
 	gearBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
 	gearBtn.TextSize = 16
+	gearBtn.ZIndex = 4
 	gearBtn.Parent = card
 
 	gearBtn.Activated:Connect(function()
-		print("Opening configuration for macro: " .. macroData.name)
+		print("Opening management dropdown for: " .. macroData.name)
 	end)
 end
 
+-- Load existing saved macros into view
 for i, macro in ipairs(savedMacros) do
 	renderMacroCard(macro, i)
 end
 
+-- 3. Macro Creation Popup Modal
 local function openCreationPopup()
 	local overlay = Instance.new("TextButton")
 	overlay.Size = UDim2.new(1, 0, 1, 0)
@@ -932,7 +1047,7 @@ local function openCreationPopup()
 	closeBtn.Size = UDim2.new(0, 30, 0, 30)
 	closeBtn.BackgroundTransparency = 1
 	closeBtn.Font = Enum.Font.GothamBold
-	closeBtn.Text = "×"
+	closeBtn.Text = "✕"
 	closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	closeBtn.TextSize = 12
 	closeBtn.ZIndex = 12
